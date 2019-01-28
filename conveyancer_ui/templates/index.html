@@ -1,0 +1,10 @@
+{% extends "app/layout.html" %}
+
+{% block title %}Index{% endblock %}
+
+{% block main %}
+  <div class="my-5 p-4">
+    <h1>Conveyancer UIs</h1>
+    <p class="lead"><a class="btn btn-secondary btn-lg" href="{{ url_for('conveyancer_admin.case_list') }}">View case list</a></p>
+  </div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "app/theme/"+config['APP_USER']+".html" %}
+
+{% block content %}
+  <div id="confirm-row" class="row">
+    <div class="col-lg-7 {{ config['APP_USER'] }}-container text-center p-3">
+      <h4>Use your touch ID to confirm that you're happy to sign your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements</h4><br>
+      <form id="confirm-form" action="{{ url_for('conveyancer_user.agreement_signing') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <a href="javascript:;" onclick="startSigning();">
+          <i class="fas fa-fingerprint fa-fw fa-6x {% if config['APP_USER'] == 'seller' %} text-white {% endif %}"></i>
+        </a>
+      </form>
+    </div>
+  </div>
+  <div id="signing-row" class="row text-center" style="display:none">
+    <div class="col-lg-7 {{ config['APP_USER'] }}-container text-center p-3">
+      <h4>Signing your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements...</h4><br>
+      <a href="{{ url_for('conveyancer_user.agreement_signed') }}">
+        <i class="fa  fa-4x {% if config['APP_USER']  == 'seller' %} fa-hourglass-half text-white {% else %}fa-spinner fa-spin {% endif %}"></i>
+      </a>
+    </div>
+  </div>
+{% endblock %}
+
+{% block bodyEnd %}
+  <script>
+    function startSigning() {
+      var formRow = document.getElementById('confirm-row');
+      var signingRow = document.getElementById('signing-row');
+      formRow.style.display = "none";
+      signingRow.style.display = "block";
+      document.getElementById('confirm-form').submit();
+    }
+  </script>
+  {{ super() }}
+{% endblock %}

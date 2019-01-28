@@ -1,0 +1,8 @@
+babel==2.6.0
+flask-compress==1.4.0
+flask-logconfig==0.4.2
+flask-script==2.0.6
+flask-wtf==0.14.2
+flask==1.0.2
+misaka==2.1.0
+requests==2.20.0

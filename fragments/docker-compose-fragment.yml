@@ -1,0 +1,57 @@
+version: '2'
+services:
+  # Notice how the service name, container name and repo directory (where the Dockerfile lives) all match.
+  conveyancer-ui-a:
+    container_name: conveyancer-ui-a
+    build: ./conveyancer-ui
+    environment:
+      CONVEYANCER_API_URL: 'http://host.docker.internal:8081/api'
+      CASE_MANAGEMENT_API_URL: 'http://case-management-api-a:8080/v1'
+      COUNTER_CONVEYANCER_UI_URL: 'http://conveyancer-ui-b:8080'
+      LENDER_MANAGEMENT_API_URL:  'http://lender-management-api-a:8080/v1'
+      APP_USER: 'seller'
+    restart: on-failure
+    ports:
+      # The base Flask Dockerfile tells gunicorn to use 8080 by default, we expose it here and map it to a unique
+      # port for the app (which is subsequently used by the dev-env to forward it outside of vagrant too).
+      - "7002:8080"
+    volumes:
+      # Our convention is (for python) to always map the app files to /src within the container
+      - ./conveyancer-ui:/src
+    # Redirect all the logs to a logstash server. Logstash is set up to parse RFC5424 format messages.
+    logging:
+      driver: syslog
+      options:
+        syslog-format: "rfc5424"
+        syslog-address: "tcp://localhost:25826"
+        tag: "{{.Name}}"
+    # Docker-compose will ensure logstash is started before the application starts.
+    depends_on:
+      - logstash
+  conveyancer-ui-b:
+    container_name: conveyancer-ui-b
+    build: ./conveyancer-ui
+    environment:
+      CONVEYANCER_API_URL: 'http://host.docker.internal:8082/api'
+      CASE_MANAGEMENT_API_URL: 'http://case-management-api-b:8080/v1'
+      COUNTER_CONVEYANCER_UI_URL: 'http://conveyancer-ui-a:8080'
+      LENDER_MANAGEMENT_API_URL:  'http://lender-management-api-b:8080/v1'
+      APP_USER: 'buyer'
+    restart: on-failure
+    ports:
+      # The base Flask Dockerfile tells gunicorn to use 8080 by default, we expose it here and map it to a unique
+      # port for the app (which is subsequently used by the dev-env to forward it outside of vagrant too).
+      - "7003:8080"
+    volumes:
+      # Our convention is (for python) to always map the app files to /src within the container
+      - ./conveyancer-ui:/src
+    # Redirect all the logs to a logstash server. Logstash is set up to parse RFC5424 format messages.
+    logging:
+      driver: syslog
+      options:
+        syslog-format: "rfc5424"
+        syslog-address: "tcp://localhost:25826"
+        tag: "{{.Name}}"
+    # Docker-compose will ensure logstash is started before the application starts.
+    depends_on:
+      - logstash

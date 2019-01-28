@@ -1,0 +1,158 @@
+{% extends "app/theme/"+config['APP_USER']+".html" %}
+
+{% block content %}
+  <div class="container-fluid p-0">
+    <div class="row">
+      <div class="col-lg-5 mx-auto">
+        {% if request.args.get('error_message') %}
+          <div class="alert alert-danger">
+            {{ request.args.get('error_message') }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {% if agreement_details is defined and title_details is defined %}
+      <div class="row">
+        <div class="col-lg-7 mx-auto">
+          <h1>Review sales agreement</h1>
+          <div class="{{ config['APP_USER'] }}-contract-box">
+            <div class="row pt-2">
+              <div class="col-6">Date:</div>
+              <div class="col-6 lr-blue">{{ agreement_details['latest_update_date_time'] }}</div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Seller:</div>
+              <div class="col-6">
+                {{ title_details['seller_details']['first_name'] }} {{ title_details['seller_details']['last_name'] }}
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Buyer:</div>
+              <div class="col-6">
+                {{ title_details['buyer_details']['first_name'] }} {{ title_details['buyer_details']['last_name'] }}
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Property (freehold/leasehold):</div>
+              <div class="col-6">Freehold
+                <p>
+                  {{ title_details['address']['house_name_number'] }} {{ title_details['address']['street'] }}<br>
+                  {{ title_details['address']['town_city'] }}<br>
+                  {{ title_details['address']['postcode'] }}
+                </p>
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Title number:</div>
+              <div class="col-6">{{ title_id }}</div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Specific incumbrances:</div>
+              <div class="col-6">None</div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Title guarantee (full/limited):</div>
+              <div class="col-6">Full</div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Completion Date:</div>
+              <div class="col-6">{{ agreement_details['completion_date'] }}</div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Contract rate(%):</div>
+              <div class="col-6">{{ agreement_details['contract_rate'] }}% per annum</div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Purchase price(<span>{{ agreement_details['purchase_price_currency_code'] }}</span>):</div>
+              <div class="col-6">{{ agreement_details['purchase_price'] }}</div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Deposit(<span>{{ agreement_details['deposit_currency_code'] }}</span>):</div>
+              <div class="col-6">{{ agreement_details['deposit'] }}</div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Contents price - if separate(<span>{{ agreement_details['contents_price_currency_code'] }}</span>):</div>
+              <div class="col-6">N/A</div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Balance(<span>{{ agreement_details['balance_currency_code'] }}</span>):</div>
+              <div class="col-6">{{ agreement_details['balance'] }}</div>
+            </div>
+            <div class="row pt-2">
+              <div class="col">
+                <p class="mb-0 ">The seller will sell and the buyer will buy the property for the purchase price.</p>
+                <p class="col text-center m-2 m-lg-0"><a href="#"><u>Sales agreement terms</u></a></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <p class="font-weight-bold mb-0">Notices can be sent to:</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <span class="font-weight-bold">Buyer's conveyancer</span><br>
+                Name: {{ title_details['buyer_conveyancer_details']['name'] }}<br>
+                Email: {{ title_details['buyer_conveyancer_details']['email'] }}
+              </div>
+              <div class="col  mt-3 mt-lg-0">
+                <span class="font-weight-bold">Seller's conveyancer</span><br>
+                Name: {{ title_details['seller_conveyancer_details']['name'] }}<br>
+                Email: {{ title_details['seller_conveyancer_details']['email'] }}
+              </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col text-center">
+              <input type="hidden" value="{{ csrf_token() }}" id="csrf_token" name="csrf_token">
+              <input type="hidden" value="{{ title_id }}" id="title_id" name="title_id">
+              <button type="buttton" id="submit_button" onclick="submitForm()" class="btn {{ config['APP_USER'] }}-bg-button btn-blue btn-lg">
+                Accept agreement
+              </button>
+              <br>
+              <a href="#" class="font-weight-bold"><u>Negotiate</u></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="row">
+        <div class="col-lg-5 mx-auto">
+          <div class="alert alert-danger">
+            Sales agreement does not exist.
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+
+
+{% block bodyEnd %}
+  <script>
+    function submitForm() {
+      $("#submit_button").attr("disabled", "disabled");
+      title_id = $("#title_id").val()
+      $.ajax({
+        url: "{{ url_for('conveyancer_admin.review_sales_agreement') }}",
+        type: "POST",
+        data: { "title_id": title_id, "csrf_token": $("#csrf_token").val() },
+        success: function (result) {
+          if (result == "success") {
+            query_str = "title_id={{ title_id }}&case_reference={{ session['case_reference'] }}"
+            url = "{{ config['COUNTER_CONVEYANCER_UI_URL'] }}/user/agreement-transfer-notify?" + query_str
+            window.open(url, '_blank');
+            window.location.href = "{{ url_for('conveyancer_admin.case_list') }}";
+          }
+          else {
+            window.location.href = "{{ url_for('conveyancer_admin.review_sales_agreement', error_message='Something went wrong while saving the agreement') }}";
+          }
+        },
+        error: function (err) {
+          console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
+        }
+      });
+    }
+  </script>
+  {{ super() }}
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "app/theme/"+config['APP_USER']+".html" %}
+
+{% block content %}
+  <form name="agreement_form" action="{{ url_for('conveyancer_user.agreement_signing') }}">
+    <div class="row">
+      <div class="col-lg-9 {{ config['APP_USER'] }}-container">
+        <h1>Sign your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements</h1>
+        <p class="mb-0">
+          Please agree to your sales agreement{% if not is_selling %}, mortgage terms {% endif %} and property transfer.<br>
+          You'll confirm this on the next screen. You can view your full documents by clicking on the links below.<br>
+          <strong>
+            {{ address['house_name_number'] + ' ' + address['street'] }}<br>
+            {{ address['town_city'] }}<br>
+            {{ address['county'] }}<br>
+            {{ address['country'] }}<br>
+            {{ address['postcode'] }}
+          </strong>
+        </p>
+        <div class="row m-2">
+          <div class="col">
+            will be {% if is_selling %}sold{% else %}bought{% endif %} for
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">{{ purchase_price }}</div>
+        </div>
+        <br>
+        <div class="row m-xs-1">
+          <div class="col-1 col-lg-5 text-right p-0 "></div>
+          <div class="col  text-left pl-2">I agree to:</div>
+        </div>
+        <div class="row m-xs-1">
+          <div class="col-1 col-lg-5 text-right p-0 ">
+            <input type="checkbox" class="mt-xs-2" required="required">
+          </div>
+          <div class="col  text-left pl-2"><strong><u>my sales agreement</u></strong></div>
+        </div>
+        {% if not is_selling %}
+          <div class="row m-xs-1">
+            <div class="col-1 col-lg-5 text-right p-0"><input type="checkbox" class="mt-xs-2" required="required"></div>
+            <!-- TODO: Replace the lender's name with value from API response -->
+            <div class="col text-left pl-2"><strong><u>{{ buyer_lender | title }}'s mortgage terms</u></strong></div>
+          </div>
+          <div class="row m-xs-1">
+            <div class="col-1 col-lg-5 text-right p-0"><input type="checkbox" class="mt-xs-2" required="required"></div>
+            <div class="col text-left pl-2"><strong><u>my transfer agreement</u></strong></div>
+          </div>
+        {% else %}
+          <div class="row m-xs-1">
+            <div class="col-1 col-lg-5 text-right p-0"><input type="checkbox" class="mt-xs-2" required="required"></div>
+            <div class="col text-left pl-2"><strong><u>transfer my property</u></strong></div>
+          </div>
+        {% endif %}
+        <div class="row">
+          <div class="col">
+            <button type="submit" class="btn  {{ config['APP_USER'] }}-bg-button btn-blue m-3">
+              Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock %}

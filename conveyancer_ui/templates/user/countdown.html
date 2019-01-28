@@ -1,0 +1,100 @@
+{% extends "app/layout.html" %}
+
+{% block head %}
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #cal-bg {
+      font-size: 20vh;
+      text-align: center;
+      font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+      font-weight: bold;
+      overflow: hidden;
+      word-wrap: none;
+      white-space: nowrap;
+      height: 100%;
+    }
+
+    #cal-text-body {
+      margin: auto 0;
+    }
+
+    #cal-info {
+      font-size: 1.1em;
+      margin-bottom: 0.15em;
+    }
+  </style>
+
+  <script>
+    var ticker = null;
+    var completionDatetime = new Date("{{ completionDate }}");
+    var serverNowDatetime = new Date("{{ serverNowDate }}");
+    var localNowDatetime = new Date();
+    var nowDifferenceDatetime = (localNowDatetime.getTime() - serverNowDatetime.getTime()) / 1000;
+
+    function tick() {
+      endTime = (Date.parse(completionDatetime) / 1000);
+
+      var now = new Date();
+      now = ((Date.parse(now) - nowDifferenceDatetime) / 1000);
+
+      var timeLeft = endTime - now;
+
+      if (timeLeft >= 0) {
+        var minutes = Math.floor(timeLeft / 60);
+        var seconds = Math.floor((timeLeft - (minutes * 60)));
+
+
+        if (minutes < "10") { minutes = "0" + minutes; }
+        if (seconds < "10") { seconds = "0" + seconds; }
+
+        $("#cal-minutes > span").html(minutes);
+        $("#cal-seconds > span").html(seconds);
+
+        return true;
+      } else {
+        $("#cal-minutes > span").html('00');
+        $("#cal-seconds > span").html('00');
+
+        if (new RegExp("[\?&]" + "fun").exec(window.location.href)) {
+            $.confetti.start();
+        }
+        clearInterval(ticker);
+        setTimeout(function() {
+          window.open("{{ notification_url_path }}", "_blank")
+          window.open("{{ counterparty_conveyancer_ui_url + notification_url_path  }}", "_blank")
+        }, 3000)
+
+        return false;
+      }
+    }
+
+    $(document).ready(function() {
+      if (tick()) ticker = setInterval(function() { tick(); }, 1000);
+    });
+  </script>
+
+{% endblock %}
+
+{% block main %}
+  <div id="cal-bg">
+    <div id="cal-body">
+      <div id="cal-text-body">
+        <div id="cal-minutes"><span>00</span> Minutes</div>
+        <div id="cal-seconds"><span>00</span> Seconds</div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block bodyEnd %}
+  <script type="text/javascript">
+  //https://www.jqueryscript.net/animation/Confetti-Animation-jQuery-Canvas-Confetti-js.html
+  !function(t){t.confetti=new function(){var h,l,s,d,c=150,m=[],u=0,w=!0,f=!0,i={colorOptions:["DodgerBlue","OliveDrab","Gold","pink","SlateBlue","lightblue","Violet","PaleGreen","SteelBlue","SandyBrown","Chocolate","Crimson"],colorIndex:0,colorIncrementer:0,colorThreshold:10,getColor:function(){return 10<=this.colorIncrementer&&(this.colorIncrementer=0,this.colorIndex++,this.colorIndex>=this.colorOptions.length&&(this.colorIndex=0)),this.colorIncrementer++,this.colorOptions[this.colorIndex]}};function o(t){var n,i;this.x=Math.random()*s,this.y=Math.random()*d-d,this.r=(n=10,i=30,Math.floor(Math.random()*(i-n+1)+n)),this.d=Math.random()*c+10,this.color=t,this.tilt=Math.floor(10*Math.random())-10,this.tiltAngleIncremental=.07*Math.random()+.05,this.tiltAngle=0,this.draw=function(){return l.beginPath(),l.lineWidth=this.r/2,l.strokeStyle=this.color,l.moveTo(this.x+this.tilt+this.r/4,this.y),l.lineTo(this.x+this.tilt,this.y+this.tilt+this.r/4),l.stroke()}}function M(t,n,i,o){t.x=n,t.y=i,t.tilt=o}window.requestAnimFrame=window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(t){return window.setTimeout(t,1e3/60)},this.init=function(){t("body").append('<canvas id="confettiCanvas" style="position:absolute;top:0;left:0;display:none;z-index:99;"></canvas>'),h=document.getElementById("confettiCanvas"),l=h.getContext("2d"),s=window.innerWidth,d=window.innerHeight,h.width=s,h.height=d,InitializeButton(),t(window).resize(function(){s=window.innerWidth,d=window.innerHeight,h.width=s,h.height=d})},this.start=function(){h.style.display="block",m=[],f=!1;for(var t=0;t<c;t++){var n=i.getColor();m.push(new o(n))}s=window.innerWidth,d=window.innerHeight,h.width=s,h.height=d,function t(){return f?null:(requestAnimFrame(t),function(){l.clearRect(0,0,s,d);for(var t=[],n=0;n<c;n++)i=n,t.push(m[i].draw());var i;return function(){var t,n,i,o,e,r=0;u+=.01,.1;for(var a=0;a<c;a++){if(t=m[a],f)return;!w&&t.y<-15?t.y=d+100:(e=a,(o=t).tiltAngle+=o.tiltAngleIncremental,o.y+=(Math.cos(u+o.d)+3+o.r/2)/2,o.x+=Math.sin(u),o.tilt=15*Math.sin(o.tiltAngle-e/3),t.y<=d&&r++,i=a,((n=t).x>s+20||n.x<-20||n.y>d)&&w&&(0<i%5||i%2==0?M(n,Math.random()*s,-10,Math.floor(10*Math.random())-10):0<Math.sin(u)?M(n,-5,Math.random()*d,Math.floor(10*Math.random())-10):M(n,s+5,Math.random()*d,Math.floor(10*Math.random())-10)))}0===r&&(f=!0,null!=l&&(l.clearRect(0,0,s,d),h.style.display="none"))}(),t}())}()}},t.confetti.init()}(jQuery);
+  </script>
+{% endblock %}

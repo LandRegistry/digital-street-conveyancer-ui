@@ -1,0 +1,41 @@
+{% extends "app/theme/"+config['APP_USER']+".html" %}
+
+{% block content %}
+  {% if is_selling %}
+    <div class="w-75 my-5 p-3 {{ config['APP_USER'] }}-container text-center">
+      <h1 class="font-weight-bold">Your property transfer is complete</h1>
+      <div class="h3">
+        HM Land Registry have updated their records and you've been removed as the owner of
+        {{ address['house_name_number'] }} {{ address['street'] }}<br>
+        from the register
+        <br>The money from the sale should be with you by the end of the day.
+        <br><br>
+        <strong>Reminder!</strong><br>
+        Make sure that you've handed your keys to your estate agent.<br>
+        <img src="{{ url_for('static', filename='images/app/confirmation_screen_seller.png') }}"
+             class="img-responsive w-15">
+        <br>
+        <strong>Please remember to <a href="{{ url_for('login.logout') }}" class="colour-inherit">logout</a></strong>
+      </div>
+    </div>
+  {% else %}
+    <div class="col-lg-7  {{ config['APP_USER'] }}-container text-center p-3">
+      <h1 class="font-weight-bold">Great news!</h1>
+      <div class="h3">
+        <strong>
+          Your property transfer is complete.<br>
+          HM Land Registry have updated their records and registered you as the new owner of<br>
+          {{ address['house_name_number'] }} {{ address['street'] }}<br><br>
+          You can now:<br>
+        </strong>
+        <ul class="list-style-position-inside">
+          <li>pick up the keys to your new home</li>
+          <li><a href="#" class="colour-inherit"><u>view a copy of the updated register</u></a></li>
+        </ul>
+        <img src="{{ url_for('static', filename='images/app/confirmation_screen_buyer.png') }}" class="img-responsive w-15">
+        <br>
+        <strong>Please remember to <a href="{{ url_for('login.logout') }}" class="colour-inherit">logout</a></strong>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

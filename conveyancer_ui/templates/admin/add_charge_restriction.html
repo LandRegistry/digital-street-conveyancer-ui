@@ -1,0 +1,46 @@
+{% extends "app/theme/"+config['APP_USER']+".html" %}
+
+
+{% block content %}
+  <form name="add_charge_form" method="post" action="{{ url_for('conveyancer_admin.add_new_charge_restriction') }}">
+    <div class="row">
+      <div class="col-lg-7 {{ config['APP_USER'] }}-container">
+        <div class="h3 font-weight-bold">Add new charge and restriction</div>
+        <div class="row m-lg-2">
+          <div class="col h5">
+            {{ title_charge["buyer_lender"] | title }} has requested that the following charge and related charge
+            restriction are registered by HMLR at the point of completion.
+          </div>
+        </div>
+        <div class="row m-lg-2">
+          <div class="col">
+            <span class="h5 font-weight-bold">Charge</span><br>
+            <strong>Lender: </strong>{{ title_charge["buyer_lender"] | title }}<br>
+            <strong>Date: </strong>{{ title_charge["date"] }}<br>
+            <strong>Amount: </strong>{{ title_charge["amount_display"] }}
+          </div>
+        </div>
+        <div class="row m-lg-2">
+          <div class="col">
+            <span class="h5"><strong>Restriction</strong><br></span>
+            <div class="font-120">{{ title_charge["restriction_text"] }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col mb-3">
+            <input type="hidden" name="buyer_lender" value="{{ title_charge['buyer_lender'] }}"/>
+            <input type="hidden" name="date" value="{{  title_charge['date_unformatted'] }}"/>
+            <input type="hidden" name="amount" value="{{ title_charge['amount'] }}"/>
+            <input type="hidden" name="amount_currency" value="{{ title_charge['amount_currency'] }}"/>
+            <input type="hidden" name="restriction_text" value="{{ title_charge['restriction_text'] }}"/>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" class="btn font-weight-bold {{ config['APP_USER'] }}-bg-button btn-blue">
+              Add new charge
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock %}

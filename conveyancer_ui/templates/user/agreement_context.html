@@ -1,0 +1,49 @@
+{% extends "app/theme/"+config['APP_USER']+".html" %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-lg-8 {{ config['APP_USER'] }}-container">
+      {% if is_selling %}
+        <h3>You can now agree and sign your sales and transfer agreements</h3>
+      {% else %}
+        <h3>You can now agree and sign your sales, mortgage and transfer agreements</h3>
+      {% endif %}
+      <h5>You'll need to use your touch ID to do this.<br>
+        <div class="container text-left">
+          <ol class="{{ config['APP_USER'] }}-agreement">
+            {% if is_selling %}
+              <li>
+                Your sales agreement is your written contract between you and the buyer which sets out the terms of the
+                sale. It specifies the rights and duties of you and the buyer. It needs to be signed by both parties
+                before it's legally binding.
+              </li>
+              <li>
+                The property needs to be registered in the buyer's name, with HM Land Registry.
+                Once this is done, ownership of the property will be legally transferred from you to the buyer.
+              </li>
+            {% else %}
+              <li>
+                Your sales agreement is your written contract with the seller, <br>
+                which sets out the terms of the sale. It specifies the rights and duties of you and the seller.
+                It needs to be signed by both parties
+                before it's legally binding.
+              </li>
+              <li>
+                When you've signed your mortgage agreement it confirms that you're happy to proceed based on the terms
+                of your mortgage offer. Upon completion of your property sale, the signed mortgage agreement is legally
+                binding.
+              </li>
+              <li>
+                The property needs to be registered in your name with HM Land Registry.
+                Once this is done, ownership of the property will be legally transferred to you from the seller.
+              </li>
+            {% endif %}
+          </ol>
+        </div>
+      </h5>
+      <a href="{{ url_for('conveyancer_user.accept_agreement') }}">
+        <button type="button" class="btn  {{ config['APP_USER'] }}-bg-button btn-blue m-3">Continue</button>
+      </a>
+    </div>
+  </div>
+{% endblock %}

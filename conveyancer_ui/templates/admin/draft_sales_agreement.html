@@ -1,0 +1,187 @@
+{% extends "app/theme/"+config['APP_USER']+".html" %}
+{% block head %}
+  {{ super() }}
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css" />
+{% endblock %}
+
+{% block content %}
+
+  {% if error_message %}
+    <div class="row">
+      <div class="col-7  mx-auto pt-1">
+        <div class="alert alert-danger">
+          {{ error_message }}
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="row">
+      <div class="col-lg-7 m-auto ">
+        <h1>Draft sales agreement</h1>
+        <form action="{{ url_for('conveyancer_admin.draft_sales_agreement',case_reference=cases_details['case_reference']) }}" method="post">
+          <div class="{{ config['APP_USER'] }}-contract-box form-group">
+            <div class="row pt-2">
+              <div class="col">Seller:</div>
+              <div class="col-6">{{ cases_details['seller_details']['first_name'] }} {{
+                cases_details['seller_details']['last_name'] }}
+                <input type="hidden" name="seller_id" value="{{ cases_details['seller_details']['identity'] }}">
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col">Buyer:</div>
+              <div class="col-6">
+                {{ cases_details['buyer_details']['first_name'] }} {{ cases_details['buyer_details']['last_name'] }}
+                <input type="hidden" name="buyer_id" value="{{ cases_details['buyer_details']['identity'] }}">
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6">Property
+                <span class="small_font">(freehold/leasehold):</span>
+              </div>
+              <div class="col-6">Freehold
+                <p>
+                  {{ cases_details['address']['house_name_number'] }} {{ cases_details['address']['street'] }} <br>
+                  {{ cases_details['address']['town_city'] }} <br>
+                  {{ cases_details['address']['postcode'] }}
+                </p>
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col">Title number:</div>
+              <div class="col-lg-6">
+                <input class="form-control" readonly="readonly" type="text" id="title_id" name="title_id"
+                       value="{{ cases_details['title_number'] }}">
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col">Specific incumbrances:</div>
+              <div class="col-lg-6">
+                <textarea class="form-control" disabled="disabled">None</textarea>
+              </div>
+            </div>
+            <div class="row pt-2 ">
+              <div class="col">Title guarantee (full/limited):</div>
+              <div class="col-lg-6">
+                <select class="form-control" required="required" id="title_guarantee" name="title_guarantee">
+                  <option value="">Select</option>
+                  <option value="full">Full</option>
+                  <option value="limited">Limited</option>
+                </select>
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col">Completion date:</div>
+              <div class="col-lg-6">
+                <input class="form-control" required="required" id="completion_date" name="completion_date"
+                       laceholder="DD/MM/YYY" type="text" readonly="readonly"
+                       value="{{ cases_details['completion_date'] }}" />
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col">Contract rate(%):</div>
+              <div class="col-lg-6">
+                <input class="form-control" type="number" step="0.01" required="required" id="contract_rate"
+                       name="contract_rate">
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col">Purchase price(<span>&#163;</span>):</div>
+              <div class="col-lg-6">
+                <input type="number" step="0.01" class="form-control" min=0 required="required" id="purchase_price"
+                       name="purchase_price">
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col">Deposit(<span>&#163;</span>):</div>
+              <div class="col-lg-6">
+                <input type="number" step="0.01" class="form-control" min=0 required="required" id="deposit" name="deposit">
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col">Contents price - if separate(<span>&#163;</span>):</div>
+              <div class="col-lg-6">
+                <input class="form-control" type="text" required="required" name="contents_price" id="contents_price"
+                       disabled="disabled" value="N/A">
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col">Balance(<span>&#163;</span>):</div>
+              <div class="col-lg-6">
+                <input class="form-control" type="text" readonly="readonly" min="0" name="balance" id="balance">
+              </div>
+            </div>
+            <div class="row pt-2">
+              <div class="col">
+                <p class="text-center mb-0 tex-justify">The seller will sell and the buyer will buy the property for the
+                  purchase price.
+                </p>
+                <p class="col text-center m-2 m-lg-0"><a href="#">Sales agreement terms</a></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <p class="font-weight-bold mb-0">Notices can be sent to:</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <span class="font-weight-bold">Buyer's conveyancer</span><br>
+                Name: {{ cases_details['buyer_conveyancer_details']['name'] }}<br>
+                Email: {{ cases_details['buyer_conveyancer_details']['email'] }}
+              </div>
+              <div class="col mt-3 mt-lg-0">
+                <span class="font-weight-bold">Seller's conveyancer</span><br>
+                Name: {{ cases_details['seller_conveyancer_details']['name'] }}<br>
+                Email: {{ cases_details['seller_conveyancer_details']['email'] }}
+              </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <div class="col text-center">
+              <button type="submit" class="btn {{ config['APP_USER'] }}-bg-button btn-lg">Send to buyer's conveyancer</button>
+            </div>
+          </div>
+
+          <!--DEMO ONLY. Out of context. For proof of concept demo only.-->
+          <div class="my-5">
+            <div class="demo-only-section">
+              <div class="form-group row mb-0">
+                <label for="completion_time" class="col col-form-label">Set '<i>Completion date</i>' to be in:</label>
+                <div class="input-group col">
+                  <input class="form-control" required="required" id="completion_time" name="completion_time" type="number" step="5" min="5" max="40" />
+                  <div class="input-group-append"><span class="input-group-text">Minutes</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--END DEMO ONLY CODE-->
+
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block bodyEnd %}
+  <script>
+    $(document).ready(function () {
+      $('#completion_date:not([readonly])').datepicker({
+        format: 'dd/mm/yyyy',
+        todayHighlight: true,
+        autoclose: true
+      });
+
+      //set balance = purchase_price-deposit
+      $("#purchase_price, #deposit").bind('change', function () {
+        $("#balance").val($("#purchase_price").val() - $("#deposit").val());
+        $("#deposit").attr({
+          "max": $("#purchase_price").val()
+        });
+      });
+
+    })
+  </script>
+  {{ super() }}
+{% endblock %}
