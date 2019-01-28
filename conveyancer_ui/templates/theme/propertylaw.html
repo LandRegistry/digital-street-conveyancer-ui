@@ -1,0 +1,45 @@
+{% extends "app/layout.html" %}
+
+{% block header %}
+	<nav class="navbar navbar-expand-lg fixed-top navbar-dark lr-bg-blue p-lg-0">
+		<div class="container-fluid">
+			<a class="navbar-brand mb-0 h1" href="/">Propertylaw.net</a>
+			{% if session['user_name']%}
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main_navbar"
+				aria-controls="main_navbar" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="navbar-collapse collapse" id="main_navbar">
+					<ul class="navbar-nav ml-auto flex-column" id="header_nav_item">
+						<li class="nav-item">
+							You're logged in as {{ session['user_name'] }}
+						</li>						
+						<li class="nav-item ml-lg-auto">						
+							<strong><a class="nav-link p-0 text-underline-hover" href="{{ url_for('login.logout') }}">Logout</a></strong>
+						</li>
+					</ul>
+				</div>
+			{% endif %}
+		</div>
+	</nav>
+{% endblock %}
+
+{% block main %}
+	<div class="container-fluid mb-5">
+		<div class="row">
+			{% if admin %}
+				{% block sidebar %}
+				  {% include "app/includes/sidebar.html" %}
+				{% endblock %}      
+					<main role="main" class="ml-sm-auto col-lg-10">				  
+			{% else %}
+					<main role="main" class="ml-sm-auto col">
+			{% endif %}
+			{% block beforeContent %}
+			{% endblock %}
+			{% block content %}{% endblock %}
+			</main>
+		</div>
+	</div>
+{% endblock %}

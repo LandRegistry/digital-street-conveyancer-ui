@@ -5,9 +5,9 @@
     <div class="row">
       <div class="col-lg-5 mx-auto">
         {% if request.args.get('error_message') %}
-          <div class="alert alert-danger">
-            {{ request.args.get('error_message') }}
-          </div>
+        <div class="alert alert-danger">
+          {{ request.args.get('error_message') }}
+        </div>
         {% endif %}
       </div>
     </div>
@@ -21,20 +21,24 @@
               <div class="col-6 lr-blue">{{ agreement_details['latest_update_date_time'] }}</div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Seller:</div>
+              <div class="col-6"><span class="font-weight-bold">Seller:</span></div>
               <div class="col-6">
                 {{ title_details['seller_details']['first_name'] }} {{ title_details['seller_details']['last_name'] }}
               </div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Buyer:</div>
+              <div class="col-6"><span class="font-weight-bold">Buyer:</span></div>
               <div class="col-6">
                 {{ title_details['buyer_details']['first_name'] }} {{ title_details['buyer_details']['last_name'] }}
               </div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Property (freehold/leasehold):</div>
-              <div class="col-6">Freehold
+              <div class="col-6"><span class="font-weight-bold">Property (freehold/leasehold):</span></div>
+              <div class="col-6">Freehold</div>
+            </div>
+            <div class="row pt-2">
+              <div class="col-6"><span class="font-weight-bold">Address:</span></div>
+              <div class="col-6">
                 <p>
                   {{ title_details['address']['house_name_number'] }} {{ title_details['address']['street'] }}<br>
                   {{ title_details['address']['town_city'] }}<br>
@@ -43,62 +47,73 @@
               </div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Title number:</div>
+              <div class="col-6"><span class="font-weight-bold">Title number: </span></div>
               <div class="col-6">{{ title_id }}</div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Specific incumbrances:</div>
+              <div class="col-6"><span class="font-weight-bold">Specific incumbrances: </span></div>
               <div class="col-6">None</div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Title guarantee (full/limited):</div>
+              <div class="col-6"><span class="font-weight-bold">Title guarantee (full/limited): </span></div>
               <div class="col-6">Full</div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Completion Date:</div>
+              <div class="col-6"><span class="font-weight-bold">Completion Date:</span></div>
               <div class="col-6">{{ agreement_details['completion_date'] }}</div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Contract rate(%):</div>
+              <div class="col-6"><span class="font-weight-bold">Agreement rate:</span></div>
               <div class="col-6">{{ agreement_details['contract_rate'] }}% per annum</div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Purchase price(<span>{{ agreement_details['purchase_price_currency_code'] }}</span>):</div>
+              <div class="col-6"><span class="font-weight-bold">Purchase price(<span>{{ agreement_details['purchase_price_currency_code'] }}</span>):</span>
+              </div>
               <div class="col-6">{{ agreement_details['purchase_price'] }}</div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Deposit(<span>{{ agreement_details['deposit_currency_code'] }}</span>):</div>
+              <div class="col-6"></div>
+
+              <div class="col-6"><span class="font-weight-bold">Deposit(<span>{{ agreement_details['deposit_currency_code'] }}</span>):</span>
+              </div>
               <div class="col-6">{{ agreement_details['deposit'] }}</div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Contents price - if separate(<span>{{ agreement_details['contents_price_currency_code'] }}</span>):</div>
+              <div class="col-6"><span class="font-weight-bold">Contents price - if separate(<span>{{ agreement_details['contents_price_currency_code'] }}</span>):</span>
+              </div>
               <div class="col-6">N/A</div>
             </div>
             <div class="row pt-2">
-              <div class="col-6">Balance(<span>{{ agreement_details['balance_currency_code'] }}</span>):</div>
+              <div class="col-6"><span class="font-weight-bold">Balance(<span>{{ agreement_details['balance_currency_code'] }}</span>):</span>
+              </div>
               <div class="col-6">{{ agreement_details['balance'] }}</div>
             </div>
             <div class="row pt-2">
               <div class="col">
-                <p class="mb-0 ">The seller will sell and the buyer will buy the property for the purchase price.</p>
+                <p class="text-center mb-0">The seller will sell and the buyer will buy the property for the purchase
+                  price.</p>
                 <p class="col text-center m-2 m-lg-0"><a href="#"><u>Sales agreement terms</u></a></p>
               </div>
             </div>
             <div class="row">
               <div class="col">
-                <p class="font-weight-bold mb-0">Notices can be sent to:</p>
+                <h4>Notices can be sent to:</h4>
               </div>
             </div>
             <div class="row">
-              <div class="col">
-                <span class="font-weight-bold">Buyer's conveyancer</span><br>
-                Name: {{ title_details['buyer_conveyancer_details']['name'] }}<br>
-                Email: {{ title_details['buyer_conveyancer_details']['email'] }}
+              <div class="col-sm-6 mt-3 mt-lg-0">
+                <h5>Buyer's conveyancer</h5>
+                <span class="font-weight-bold">Name:</span> <br>
+                {{ title_details['buyer_conveyancer_details']['name'] }}<br>
+                <span class="font-weight-bold">Email:</span> <br>
+                {{ title_details['buyer_conveyancer_details']['email'] }}
               </div>
-              <div class="col  mt-3 mt-lg-0">
-                <span class="font-weight-bold">Seller's conveyancer</span><br>
-                Name: {{ title_details['seller_conveyancer_details']['name'] }}<br>
-                Email: {{ title_details['seller_conveyancer_details']['email'] }}
+              <div class="col-sm-6 mt-3 mt-lg-0">
+                <h5>Seller's conveyancer</h5>
+                <span class="font-weight-bold">Name:</span> <br>
+                {{ title_details['seller_conveyancer_details']['name'] }}<br>
+                <span class="font-weight-bold">Email:</span> <br>
+                {{ title_details['seller_conveyancer_details']['email'] }}
               </div>
             </div>
           </div>
@@ -106,7 +121,8 @@
             <div class="col text-center">
               <input type="hidden" value="{{ csrf_token() }}" id="csrf_token" name="csrf_token">
               <input type="hidden" value="{{ title_id }}" id="title_id" name="title_id">
-              <button type="buttton" id="submit_button" onclick="submitForm()" class="btn {{ config['APP_USER'] }}-bg-button btn-blue btn-lg">
+              <button type="buttton" id="submit_button" onclick="submitForm()"
+                      class="btn {{ config['APP_USER'] }}-bg-button btn-blue btn-lg">
                 Accept agreement
               </button>
               <br>
@@ -129,7 +145,7 @@
 
 
 {% block bodyEnd %}
-  <script>
+<script>
     function submitForm() {
       $("#submit_button").attr("disabled", "disabled");
       title_id = $("#title_id").val()
@@ -153,6 +169,7 @@
         }
       });
     }
-  </script>
-  {{ super() }}
+
+</script>
+{{ super() }}
 {% endblock %}

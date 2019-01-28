@@ -32,12 +32,15 @@ def accept_agreement():
         # Convert purchase price from float to currency format
         purchase_price = numbers.format_currency(agreement['purchase_price'], agreement['purchase_price_currency_code'])
 
-        buyer_lender = "Gringott Bank"
         # Case reference is required in entire journey, so if not found redirect to index page
         if session.get('case_reference'):
             case_reference = session['case_reference']
         else:
             return redirect(url_for('index.index_page'))
+
+        # get buyer lender name
+        buyer_lender = "Gringott's Bank"
+        
         is_selling = is_selling_property(case_reference)
 
         return render_template('app/user/accept_agreement.html', address=title['title']['address'],
@@ -73,7 +76,7 @@ def agreement_signing():
             signatory_res = requests.get(url, headers={'Accept': 'application/json'})
             signatory = signatory_res.json()
             agreement_approval_data = {"action": "sign",
-                                       "signatory": signatory['me'],
+                                       "signatory": signatory['me']['x500'],
                                        "signatory_individual": client
                                        }
             # Sign contract
@@ -163,7 +166,7 @@ def transfer_complete():
         try:
             # Call to fetch title address
             case_res = requests.get(current_app.config['CASE_MANAGEMENT_API_URL'] + '/cases/' + case_reference,
-                                     headers={'Accept': 'application/json'})
+                                    headers={'Accept': 'application/json'})
         except requests.exceptions.RequestException:
             raise requests.exceptions.RequestException("Case management API is down.")
 

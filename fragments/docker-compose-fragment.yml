@@ -9,7 +9,7 @@ services:
       CASE_MANAGEMENT_API_URL: 'http://case-management-api-a:8080/v1'
       COUNTER_CONVEYANCER_UI_URL: 'http://conveyancer-ui-b:8080'
       LENDER_MANAGEMENT_API_URL:  'http://lender-management-api-a:8080/v1'
-      APP_USER: 'seller'
+      APP_USER: 'conveyit4u'
     restart: on-failure
     ports:
       # The base Flask Dockerfile tells gunicorn to use 8080 by default, we expose it here and map it to a unique
@@ -36,7 +36,7 @@ services:
       CASE_MANAGEMENT_API_URL: 'http://case-management-api-b:8080/v1'
       COUNTER_CONVEYANCER_UI_URL: 'http://conveyancer-ui-a:8080'
       LENDER_MANAGEMENT_API_URL:  'http://lender-management-api-b:8080/v1'
-      APP_USER: 'buyer'
+      APP_USER: 'propertylaw'
     restart: on-failure
     ports:
       # The base Flask Dockerfile tells gunicorn to use 8080 by default, we expose it here and map it to a unique

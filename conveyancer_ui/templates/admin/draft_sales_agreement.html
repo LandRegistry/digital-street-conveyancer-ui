@@ -6,7 +6,6 @@
 {% endblock %}
 
 {% block content %}
-
   {% if error_message %}
     <div class="row">
       <div class="col-7  mx-auto pt-1">
@@ -17,7 +16,7 @@
     </div>
   {% else %}
     <div class="row">
-      <div class="col-lg-7 m-auto ">
+      <div class="col-lg-8 m-auto pt-4">
         <h1>Draft sales agreement</h1>
         <form action="{{ url_for('conveyancer_admin.draft_sales_agreement',case_reference=cases_details['case_reference']) }}" method="post">
           <div class="{{ config['APP_USER'] }}-contract-box form-group">
@@ -51,7 +50,7 @@
               <div class="col">Title number:</div>
               <div class="col-lg-6">
                 <input class="form-control" readonly="readonly" type="text" id="title_id" name="title_id"
-                       value="{{ cases_details['title_number'] }}">
+                      value="{{ cases_details['title_number'] }}">
               </div>
             </div>
             <div class="row pt-2">
@@ -74,22 +73,22 @@
               <div class="col">Completion date:</div>
               <div class="col-lg-6">
                 <input class="form-control" required="required" id="completion_date" name="completion_date"
-                       laceholder="DD/MM/YYY" type="text" readonly="readonly"
-                       value="{{ cases_details['completion_date'] }}" />
+                      laceholder="DD/MM/YYY" type="text" readonly="readonly"
+                      value="{{ cases_details['completion_date'] }}" />
               </div>
             </div>
             <div class="row pt-2">
               <div class="col">Contract rate(%):</div>
               <div class="col-lg-6">
                 <input class="form-control" type="number" step="0.01" required="required" id="contract_rate"
-                       name="contract_rate">
+                      name="contract_rate">
               </div>
             </div>
             <div class="row pt-2">
               <div class="col">Purchase price(<span>&#163;</span>):</div>
               <div class="col-lg-6">
                 <input type="number" step="0.01" class="form-control" min=0 required="required" id="purchase_price"
-                       name="purchase_price">
+                      name="purchase_price">
               </div>
             </div>
             <div class="row pt-2">
@@ -102,7 +101,7 @@
               <div class="col">Contents price - if separate(<span>&#163;</span>):</div>
               <div class="col-lg-6">
                 <input class="form-control" type="text" required="required" name="contents_price" id="contents_price"
-                       disabled="disabled" value="N/A">
+                      disabled="disabled" value="N/A">
               </div>
             </div>
             <div class="row pt-2">
@@ -121,19 +120,27 @@
             </div>
             <div class="row">
               <div class="col">
-                <p class="font-weight-bold mb-0">Notices can be sent to:</p>
+                <h4>Notices can be sent to:</h4>
               </div>
             </div>
             <div class="row">
-              <div class="col">
-                <span class="font-weight-bold">Buyer's conveyancer</span><br>
-                Name: {{ cases_details['buyer_conveyancer_details']['name'] }}<br>
-                Email: {{ cases_details['buyer_conveyancer_details']['email'] }}
+              <div class="col-sm-6 mt-3 mt-lg-0">
+                <h5>Buyer's conveyancer</h5>
+                <span class="font-weight-bold">Name:</span> <br>
+                {{ cases_details['buyer_conveyancer_details']['name'] }}<br>
+                <span class="font-weight-bold">Email:</span> <br>
+                <p>
+                  {{ cases_details['buyer_conveyancer_details']['email'] }}
+                </p>
               </div>
-              <div class="col mt-3 mt-lg-0">
-                <span class="font-weight-bold">Seller's conveyancer</span><br>
-                Name: {{ cases_details['seller_conveyancer_details']['name'] }}<br>
-                Email: {{ cases_details['seller_conveyancer_details']['email'] }}
+              <div class="col-sm-6 mt-3 mt-lg-0">
+                <h5>Seller's conveyancer</h5>
+                <span class="font-weight-bold">Name:</span> <br> 
+                {{ cases_details['seller_conveyancer_details']['name'] }}<br>
+                <span class="font-weight-bold">Email:</span> <br>
+                <p>
+                  {{ cases_details['seller_conveyancer_details']['email'] }}
+                </p>
               </div>
             </div>
           </div>

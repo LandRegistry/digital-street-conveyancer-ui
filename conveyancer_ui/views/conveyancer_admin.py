@@ -49,8 +49,17 @@ def case_list():
 
     # Load case values from API response
     case_res = cases.json()
-    return render_template('app/admin/case_list.html', cases=case_res, status_dict=status_dict,
-                           admin_notify=admin_notify)
+
+    try:
+        cases = {
+            'selling': list(case for case in filter(lambda x: x['case_type'].lower() == 'sell', case_res)),
+            'buying': list(case for case in filter(lambda x: x['case_type'].lower() == 'buy', case_res))
+        }
+    except KeyError:
+        return "Case type missing in API response"
+
+    return render_template('app/admin/case_list.html', cases=cases, status_dict=status_dict,
+                           admin_notify=admin_notify, admin=True)
 
 
 @admin.route("/request-issuance", methods=['GET', 'POST'])
@@ -81,8 +90,7 @@ def draft_sales_agreement():
         session['case_reference'] = str(request.args.get('case_reference'))
     else:
         return render_template('app/admin/draft_sales_agreement.html',
-                               error_message="Case reference is required a query parameter")
-
+                               error_message="Case reference is a required query parameter", admin=True)
     cases_details = {
         'seller_details': {},
         'buyer_details': {},
@@ -144,7 +152,7 @@ def draft_sales_agreement():
                 else:
                     error_message = "Error: Conveyancer API failed. Could not return a response."
                 return render_template('app/admin/draft_sales_agreement.html', title_id=title_id,
-                                       error_message=error_message)
+                                       error_message=error_message, admin=True)
         except requests.exceptions.RequestException:
             return "Conveyancer API is down."
     else:
@@ -158,7 +166,10 @@ def draft_sales_agreement():
         # DEMO ONLY. Set the completion date to today's date for demo purposes.
         cases_details['completion_date'] = datetime.now().strftime('%d/%m/%Y')
 
-        return render_template('app/admin/draft_sales_agreement.html', title_id=title_id, cases_details=cases_details)
+        return render_template('app/admin/draft_sales_agreement.html',
+                               title_id=title_id,
+                               cases_details=cases_details,
+                               admin=True)
 
 
 @admin.route("/review-sales-agreement", methods=['GET', 'POST'])
@@ -238,10 +249,12 @@ def review_sales_agreement():
             return render_template('app/admin/review_sales_agreement.html',
                                    agreement_details=agreement_detail,
                                    title_details=cases_details,
-                                   title_id=title_id)
+                                   title_id=title_id,
+                                   admin=True)
         else:
             return render_template('app/admin/review_sales_agreement.html',
-                                   error_message="Title agreement does not exist")
+                                   error_message="Title agreement does not exist",
+                                   admin=True)
 
 
 @admin.route("/add-new-charge-restriction", methods=['GET', 'POST'])
@@ -274,10 +287,10 @@ def add_new_charge_restriction():
             "charge": {
                 "date": request.form.get('date'),
                 "lender": {
-                           "organisation": "Lender1",
-                           "locality": "Plymouth",
-                           "country": "GB",
-                       },
+                    "organisation": "Lender1",
+                    "locality": "Plymouth",
+                    "country": "GB",
+                },
                 "amount": request.form.get('amount'),
                 "amount_currency_code": request.form.get('amount_currency')
             }
@@ -305,6 +318,9 @@ def add_new_charge_restriction():
         title_charges_res = requests.get(current_app.config['LENDER_MANAGEMENT_API_URL'] + '/restrictions',
                                          params={'type': 'CBCR'},
                                          headers={'Accept': 'application/json'})
+        # get buyer lender name
+        buyer_lender = "Gringott's Bank"
+
         title_charges = {}
         if title_charges_res.status_code == 200:
             title_charges = title_charges_res.json()
@@ -314,14 +330,14 @@ def add_new_charge_restriction():
                 completion_date_obj = datetime.strptime(agreement_obj['completion_date'], '%Y-%m-%dT%H:%M:%S')
                 title_charge['date_unformatted'] = datetime.strftime(completion_date_obj, '%Y-%m-%dT%H:%M:%S')
                 title_charge['date'] = datetime.strftime(completion_date_obj, '%d %B %Y')
-                title_charge['buyer_lender'] = "Gringott's Bank"
+                title_charge['buyer_lender'] = buyer_lender
                 title_charge['amount_currency'] = agreement_obj['balance_currency_code']
                 title_charge['amount'] = agreement_obj["balance"]
                 title_charge['amount_display'] = numbers.format_currency(agreement_obj["balance"],
-                                                                agreement_obj['balance_currency_code'])
+                                                                         agreement_obj['balance_currency_code'])
                 placeholders = [
-                   {"placeholder_str": "*CD*", "field": "date"},
-                   {"placeholder_str": "*CP*", "field": "buyer_lender"}
+                    {"placeholder_str": "*CD*", "field": "date"},
+                    {"placeholder_str": "*CP*", "field": "buyer_lender"}
                 ]
 
                 # loop over placeholders to replace them
@@ -329,9 +345,8 @@ def add_new_charge_restriction():
                     if placeholder['field'] in title_charge:
                         restriction_text = title_charge['restriction_text']
                         title_charge['restriction_text'] = restriction_text.replace(placeholder['placeholder_str'],
-                                                                                   str(title_charge[
-                                                                                           placeholder['field']]))
-        return render_template('app/admin/add_charge_restriction.html', title_charge=title_charge)
+                                                                                    str(title_charge[placeholder['field']]))
+        return render_template('app/admin/add_charge_restriction.html', title_charge=title_charge, admin=True)
 
 
 @admin.route("/request-mortgage-discharge", methods=['GET', 'POST'])

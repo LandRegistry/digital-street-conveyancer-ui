@@ -1,114 +1,176 @@
 {% extends "app/theme/"+config['APP_USER']+".html" %}
 
-
-{% block content %}
-  <div class="row">
-    <div class="col-10 m-auto">
-      {% if request.args.get('error_message') %}
-        <div class="alert alert-danger">
-          {{ request.args.get('error_message') }}
-        </div>
-      {% endif %}
-      <h1>Cases</h1>
-      <table class="w-100 table-hover" id="tbl_case_list">
-        <tbody>
-        {% if cases %}
-          <thead>
-          <tr>
-            <th scope="col">Client</th>
-            <th scope="col">Case number</th>
-            <th scope="col">Address</th>
-            <th scope="col">Case type</th>
-            <th scope="col">Title number</th>
-            <th scope="col">Action required</th>
-          </tr>
-          </thead>
-          {% for case in cases %}
-            <tr>
-              <td scope="row">{{ case['client']['first_name'] }} {{ case['client']['last_name'] }}</td>
-              <td scope="row">{{ case['case_reference'] }}</td>
-              <td scope="row">
-                {{ case['address']['house_name_number'] }}
-                {{ case['address']['street'] }}
-                {{ case['address']['town_city'] }}
-                {{ case['address']['postcode'] }}
-              </td>
-              <td scope="row">{{ case['case_type']| lower | capitalize }}ing</td>
-              <td scope="row">
-                {% if case['title_number'] %}
-                  {{ case['title_number'] }}
-                {% endif %}
-              </td>
-              {% if status_dict[case['title_number']] %}
-                <td scope="row">
-                  {% if status_dict[case['title_number']] == "instructed_conveyancer" %}
-                    <a onclick="requestIssuance('{{ case['title_number'] }}',this)" href="#">
-                      View full title information
-                    </a>
-                  {% elif status_dict[case['title_number']] == "request_issuance_pending" %}
-                    Pending retrieval
-                  {% elif status_dict[case['title_number']] == "land_title_issued" %}
-                    <a href="{{ url_for('conveyancer_admin.request_mortgage_discharge',
-                    title_number=case['title_number']) }}">
-                      Request discharge of current mortgage
-                    </a>
-                  {% elif status_dict[case['title_number']] == "proposed_request_to_add_consent_for_discharge" %}
-                    Waiting for discharge consent
-                  {% elif status_dict[case['title_number']] == "proposed_consent_for_discharge" %}
-                    <a href="{{ url_for('conveyancer_admin.draft_sales_agreement',
-                    case_reference=case['case_reference']) }}">
-                      Draft sales agreement
-                    </a>
-                  {% elif status_dict[case['title_number']] == "sales_agreement_created" %}
-                    {% if case['case_type'] == "sell" %}
-                      Waiting for agreement
-                    {% else %}
-                        <a href="{{ url_for('conveyancer_admin.add_new_charge_restriction',
+{% block content %}  
+  <div class="m-auto pt-3">
+    {% if request.args.get('error_message') %}
+      <div class="alert alert-danger">
+        {{ request.args.get('error_message') }}
+      </div>
+    {% endif %}
+    {% if cases %}
+      <h1>Cases</h1>      
+      <h2>Selling</h2>
+      <div class="table-responsive">
+        <table class="table table-hover table-striped" id="tbl_selling_case_list">
+          <tbody>
+            <thead>
+              <tr>
+                <th scope="col">Client</th>
+                <th scope="col">Case number</th>
+                <th scope="col">Address</th>                
+                <th scope="col">Title number</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            {% if cases['selling'] %}
+              {% for case in cases['selling'] %} 
+                <tr>
+                  <td scope="row">{{ case['client']['first_name'] }} {{ case['client']['last_name'] }}</td>
+                  <td>{{ case['case_reference'] }}</td>
+                  <td>
+                    {{ case['address']['house_name_number'] }}<br>
+                    {{ case['address']['street'] }}<br>
+                    {{ case['address']['town_city'] }}<br>
+                    {{ case['address']['postcode'] }}
+                  </td>                  
+                  <td>
+                    {% if case['title_number'] %}
+                      {{ case['title_number'] }}
+                    {% endif %}
+                  </td>
+                  {% if status_dict[case['title_number']] %}
+                    <td>
+                      {% if status_dict[case['title_number']] == "instructed_conveyancer" %}
+                        <a onclick="requestIssuance('{{ case['title_number'] }}',this)" href="#">
+                          View full title information
+                        </a>
+                      {% elif status_dict[case['title_number']] == "request_issuance_pending" %}
+                        Pending retrieval
+                      {% elif status_dict[case['title_number']] == "land_title_issued" %}
+                        <a href="{{ url_for('conveyancer_admin.request_mortgage_discharge',
+                        title_number=case['title_number']) }}">
+                          Request discharge of current mortgage
+                        </a>
+                      {% elif status_dict[case['title_number']] == "proposed_request_to_add_consent_for_discharge" %}
+                        Waiting for discharge consent
+                      {% elif status_dict[case['title_number']] == "proposed_consent_for_discharge" %}
+                        <a href="{{ url_for('conveyancer_admin.draft_sales_agreement',
                         case_reference=case['case_reference']) }}">
-                          Add new charge
+                          Draft sales agreement
                         </a>
-                    {% endif %}
-                  {% elif status_dict[case['title_number']] == "proposed_consent_for_new_charge" %}
-                     {% if case['case_type'] == "buy" %}
-                        <a href="{{ url_for('conveyancer_admin.review_sales_agreement',
-                         case_reference=case['case_reference']) }}">
-                          Review sales agreement
-                        </a>
-                     {% else %}
-                        Waiting for agreement
-                    {% endif %}
-                  {% elif status_dict[case['title_number']] == "sales_agreement_approved" %}
-                    Waiting for signatures
-                  {% elif status_dict[case['title_number']] == "sales_agreement_completed" %}
-                    HMLR processing transfer
-                  {% elif status_dict[case['title_number']] == "land_title_transfered" %}
-                    Property transfer complete
+                      {% elif status_dict[case['title_number']] == "sales_agreement_created" %}                      
+                        Waiting for agreement                        
+                      {% elif status_dict[case['title_number']] == "proposed_consent_for_new_charge" %}                      
+                        Waiting for agreement                        
+                      {% elif status_dict[case['title_number']] == "sales_agreement_approved" %}
+                        Waiting for signatures
+                      {% elif status_dict[case['title_number']] == "sales_agreement_completed" %}
+                        HMLR processing transfer
+                      {% elif status_dict[case['title_number']] == "land_title_transfered" %}
+                        Property transfer complete
+                      {% endif %}
+                    </td>
+                  {% else %}                    
+                    <td>Waiting for title information</td>                    
                   {% endif %}
-                </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td> No records to display</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Buying</h2>
+      <div class="table-responsive">
+          <table class="table table-hover table-striped" id="tbl_buying_case_list">
+            <tbody>
+              <thead>
+                <tr>
+                  <th scope="col">Client</th>
+                  <th scope="col">Case number</th>
+                  <th scope="col">Address</th>
+                  <th scope="col">Title number</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              {% if cases['buying'] %}
+                {% for case in cases['buying'] %}
+                  <tr>
+                    <td scope="row">{{ case['client']['first_name'] }} {{ case['client']['last_name'] }}</td>
+                    <td>{{ case['case_reference'] }}</td>
+                    <td>
+                      {{ case['address']['house_name_number'] }}<br>
+                      {{ case['address']['street'] }}<br>
+                      {{ case['address']['town_city'] }}<br>
+                      {{ case['address']['postcode'] }}
+                    </td>
+                    <td>
+                      {% if case['title_number'] %}
+                        {{ case['title_number'] }}
+                      {% endif %}
+                    </td>
+                    {% if status_dict[case['title_number']] %}
+                      <td>
+                        {% if status_dict[case['title_number']] == "instructed_conveyancer" %}
+                          <a onclick="requestIssuance('{{ case['title_number'] }}',this)" href="#">
+                            View full title information
+                          </a>
+                        {% elif status_dict[case['title_number']] == "request_issuance_pending" %}
+                          Pending retrieval
+                        {% elif status_dict[case['title_number']] == "land_title_issued" %}
+                          <a href="{{ url_for('conveyancer_admin.request_mortgage_discharge',
+                          title_number=case['title_number']) }}">
+                            Request discharge of current mortgage
+                          </a>
+                        {% elif status_dict[case['title_number']] == "proposed_request_to_add_consent_for_discharge" %}
+                          Waiting for discharge consent
+                        {% elif status_dict[case['title_number']] == "proposed_consent_for_discharge" %}
+                          <a href="{{ url_for('conveyancer_admin.draft_sales_agreement',
+                          case_reference=case['case_reference']) }}">
+                            Draft sales agreement
+                          </a>
+                        {% elif status_dict[case['title_number']] == "sales_agreement_created" %}
+                          <a href="{{ url_for('conveyancer_admin.add_new_charge_restriction',
+                          case_reference=case['case_reference']) }}">
+                            Add new charge
+                          </a>
+                        {% elif status_dict[case['title_number']] == "proposed_consent_for_new_charge" %}
+                          <a href="{{ url_for('conveyancer_admin.review_sales_agreement',
+                          case_reference=case['case_reference']) }}">
+                            Review sales agreement
+                          </a>
+                        {% elif status_dict[case['title_number']] == "sales_agreement_approved" %}
+                          Waiting for signatures
+                        {% elif status_dict[case['title_number']] == "sales_agreement_completed" %}
+                          HMLR processing transfer
+                        {% elif status_dict[case['title_number']] == "land_title_transfered" %}
+                          Property transfer complete
+                        {% endif %}
+                      </td>
+                    {% else %}
+                      <td>Waiting for draft of agreement</td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
               {% else %}
-                {% if case['case_type'] == "sell" %}
-                  <td scope="row">Waiting for title information</td>
-                {% else %}
-                  <td scope="row">Waiting for draft of agreement</td>
-                {% endif %}
+                <tr>
+                  <td> No records to display</td>
+                </tr>
               {% endif %}
-            </tr>
-          {% endfor %}
-        {% else %}
-        <tr>
-          <td> No records to display</td>
-        </tr>
-        {% endif %}
-        </tbody>
-      </table>
-    </div>
+            </tbody>
+          </table>
+      </div>
+    {% endif %}
   </div>
 {% endblock %}
 
 {% block bodyEnd %}
-<script>
+  <script>    
     function requestIssuance(title_number, el) {
-
       parent_row = $(el).parents('tr').eq(0);
       parent_row.html("<td colspan=5 style=\"text-align:center\"><i class=\"fa fa-spinner fa-spin\"></i></td>")
 
@@ -130,12 +192,10 @@
           }
         },
         error: function (err) {
-           console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
+          console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
         }
       });
     }
-
-
-</script>
-{{ super() }}
+  </script>
+  {{ super() }}
 {% endblock %}

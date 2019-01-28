@@ -1,9 +1,8 @@
 {% extends "app/theme/"+config['APP_USER']+".html" %}
 
 {% block content %}
-  <div class="col-lg-7 {{ config['APP_USER'] }}-container text-center p-3">
-    <h1 class="font-weight-bold">Great news!</h1>
-    <div class="h4">
+  <div class="col-lg-7 {{ config['APP_USER'] }}-container text-center">
+      <h1 class="font-weight-bold">Great news!</h1>
       You've signed your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements<br>
       {{ address['house_name_number'] + ' ' + address['street'] }}<br>
       {{ address['town_city'] }}<br>
@@ -14,7 +13,6 @@
       <br><br>
       We'll be in touch with any updates<br>
       <strong>Please now <u><a href="#" onclick="logout_redirect()" class="colour-inherit">logout</a></u></strong>
-    </div>
   </div>
 {% endblock %}
 
@@ -32,7 +30,6 @@
       // logout
       window.location.href = "{{ url_for('login.logout') }}";
     }
-
   </script>
   {{ super() }}
 {% endblock %}

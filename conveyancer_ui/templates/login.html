@@ -14,11 +14,11 @@
         </div>
       {% endif %}
       <div class="row">
-        <main role="main" class="col-lg-7 ml-sm-auto px-4 {{ mainClasses }} {{ config['APP_USER'] }}-container">
+        <main role="main" class="col-lg-6 ml-sm-auto {{ config['APP_USER'] }}-container">
           <h1>Login</h1>
           <div class="container-fluid h-100">
             <div class="row justify-content-center align-items-center">
-              <div class="col-lg-6">
+              <div class="col">
                 <form action="{{ url_for('login.user_login') }}" method="post">
                   <div class="form-group text-left">
                     <label for="email">Email:</label><br>
@@ -31,7 +31,7 @@
                   <div class="form-group">
                     <input type="hidden" name="redirect_url" value="{% if redirect_url %}{{ redirect_url }}{% else %}{{ request.args.get('next', '') }}{% endif %}"/>
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                    <button type="submit" class="btn  {{ config['APP_USER'] }}-bg-button btn-blue m-3">Login</button>
+                    <button type="submit" class="btn  {{ config['APP_USER'] }}-bg-button btn-blue mt-3">Login</button>
                   </div>
                 </form>
               </div>

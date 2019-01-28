@@ -47,11 +47,6 @@ CONTENT_SECURITY_POLICY_MODE = 'report-only'  # os.environ['CONTENT_SECURITY_POL
 #   - Set far *future* expiry headers on static asset requests to force browsers to cache for a long time
 #   - Add cachebusters to static asset query strings to invalidate browsers' caches when necessary
 STATIC_ASSETS_MODE = os.environ['STATIC_ASSETS_MODE']
-
-# Using SQLAlchemy/Postgres?
-# The required variables (and required usage) can be found here:
-# http://192.168.249.38/gadgets/gadget-api/blob/master/gadget_api/config.py
-
 CONVEYANCER_API_URL = os.environ['CONVEYANCER_API_URL']
 APP_USER = os.environ['APP_USER']
 CASE_MANAGEMENT_API_URL = os.environ['CASE_MANAGEMENT_API_URL']
