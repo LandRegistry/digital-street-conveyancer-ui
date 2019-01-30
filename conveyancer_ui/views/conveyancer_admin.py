@@ -18,21 +18,40 @@ request_data = {
 @admin.route("/case-list")
 @login_required
 def case_list():
+    # Initialise all dictionaries
+    status_dict = {}
+    cases = {}
+
+    # fetch all cases
     try:
         # Fetch all cases of the conveyancer
         cases = requests.get(current_app.config['CASE_MANAGEMENT_API_URL'] + '/cases',
                              params={"embed": "client"},
                              headers={'Accept': 'application/json'})
 
+    except requests.exceptions.RequestException as e:
+        return render_template('app/admin/case_list.html', error_message=str(e), cases={}, status_dict={},
+                               admin_notify="", admin=True)
+
+    case_res = cases.json()
+
+    # Fetch status values from conveyancer api
+    try:
+        cases = {
+            'selling': list(case for case in filter(lambda x: x['case_type'].lower() == 'sell', case_res)),
+            'buying': list(case for case in filter(lambda x: x['case_type'].lower() == 'buy', case_res))
+        }
+    except KeyError:
+        return "Case type missing in API response"
+
+    try:
         # Call to fetch the status of cases of the conveyancer
         title_status_res = requests.get(current_app.config['CONVEYANCER_API_URL'] + '/titles',
                                         headers={'Accept': 'application/json'})
-    except requests.exceptions.RequestException:
-        return "API is down."
 
-    # Initialise all dictionaries
-    status_dict = {}
-    case_res = {}
+    except requests.exceptions.RequestException as e:
+        return render_template('app/admin/case_list.html', error_message=str(e), cases=cases, status_dict={},
+                               admin_notify="", admin=True)
 
     # Load status values from API response
     title_status = title_status_res.json()
@@ -44,19 +63,8 @@ def case_list():
     for status_val in title_status:
         status_dict[status_val['title_number']] = status_val['status']
         # show/hide notification bell
-        if status_val['status'] == 'instructed_conveyancer' or status_val['status'] == "proposed_consent_for_discharge":
+        if status_val['status'] == "proposed_consent_for_discharge":
             admin_notify = 1
-
-    # Load case values from API response
-    case_res = cases.json()
-
-    try:
-        cases = {
-            'selling': list(case for case in filter(lambda x: x['case_type'].lower() == 'sell', case_res)),
-            'buying': list(case for case in filter(lambda x: x['case_type'].lower() == 'buy', case_res))
-        }
-    except KeyError:
-        return "Case type missing in API response"
 
     return render_template('app/admin/case_list.html', cases=cases, status_dict=status_dict,
                            admin_notify=admin_notify, admin=True)
@@ -68,17 +76,31 @@ def request_issuance():
         # for ajax request
         if request.is_xhr:
             try:
-                # Fetch title details
-                url = current_app.config['CONVEYANCER_API_URL'] + '/titles/' + request.args['title_number']
-                response = requests.post(url,
-                                         headers={'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'})
+                # Fetch owner from case management
+                cases_res = requests.get(
+                    current_app.config['CASE_MANAGEMENT_API_URL'] + '/cases/' + request.args['case_reference'],
+                    params={"embed": "client"},
+                    headers={'Accept': 'application/json'})
+                # response
+                if cases_res.status_code == 200:
+                    case = cases_res.json()
+                    case["client"]["type"] = "individual"
+                    case_data = {"title_number": request.args['title_number'],
+                                 "owner": case['client']}
+                    # Make request for issuance call
+                    url = current_app.config['CONVEYANCER_API_URL'] + '/titles/' + request.args['title_number']
+                    response = requests.post(url, data=json.dumps(case_data),
+                                             headers={'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'})
+                    if response.status_code == 200:
+                        return "true"
+                    else:
+                        return "Error: " + response.text
+                else:
+                    return "Error: " + cases_res.text
+
             except requests.exceptions.RequestException:
                 return "Conveyancer API is down."
 
-            if response.status_code == 200:
-                return "true"
-            else:
-                return "Error: " + response.text
     except Exception as e:
         return e
 
@@ -116,12 +138,10 @@ def draft_sales_agreement():
         # assign the format the input date is in
         completion_date_obj = datetime.strptime(request.form.get('completion_date'), '%d/%m/%Y')
 
-        # add specified minutes to current time and append to completion date
-        minutes_to_add = int(request.form.get('completion_time'))
-        completion_date_obj += timedelta(hours=datetime.now().hour,
-                                         minutes=int(datetime.now().minute) + max(2, minutes_to_add))
+        # combine date and time of completion
+        time_to_add = datetime.strptime(request.form.get('completion_time'), '%H:%M').time()
+        completion_date_obj = datetime.combine(completion_date_obj, time_to_add)
         completion_date = datetime.strftime(completion_date_obj, '%Y-%m-%dT%H:%M:%SZ')
-
         contract_data = {
             "buyer_conveyancer": cases_details['counterparty_conveyancer_org'],
             "buyer": buyer_details,
@@ -136,7 +156,12 @@ def draft_sales_agreement():
             "deposit_currency_code": "GBP",
             "contents_price": 0.0,
             "guarantee": request.form.get('title_guarantee'),
-            "contents_price_currency_code": "GBP"
+            "contents_price_currency_code": "GBP",
+            "payment_settler": {
+                "organisation": "Payment",
+                "locality": "Plymouth",
+                "country": "GB"
+            }
         }
         try:
             # draft a sales agreement for a title
@@ -179,8 +204,8 @@ def review_sales_agreement():
     if request.args.get('case_reference'):
         session['case_reference'] = str(request.args.get('case_reference'))
 
-    # form posted through ajax call
-    if request.is_xhr:
+    # form post
+    if request.method == 'POST':
         try:
             title_id = request.form['title_id']
 
@@ -196,9 +221,10 @@ def review_sales_agreement():
             response = requests.put(url, data=json.dumps(agreement_approval_data),
                                     headers={'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'})
             if response.status_code == 200:
-                return "success"
+                return redirect(url_for('conveyancer_admin.case_list'))
             else:
-                return response.text
+                return redirect(url_for('conveyancer_admin.review_sales_agreement',
+                                        error_message='Error: ' + response.text))
         except Exception as e:
             return str(e)
 
@@ -315,7 +341,7 @@ def add_new_charge_restriction():
         url = current_app.config['CONVEYANCER_API_URL'] + '/titles/' + title_number + '/sales-agreement'
         agreement_res = requests.get(url, headers={'Accept': 'application/json'})
         agreement_obj = agreement_res.json()
-        title_charges_res = requests.get(current_app.config['LENDER_MANAGEMENT_API_URL'] + '/restrictions',
+        title_charges_res = requests.get(current_app.config['CASE_MANAGEMENT_API_URL'] + '/restrictions',
                                          params={'type': 'CBCR'},
                                          headers={'Accept': 'application/json'})
         # get buyer lender name

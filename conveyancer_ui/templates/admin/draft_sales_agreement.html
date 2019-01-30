@@ -71,10 +71,12 @@
             </div>
             <div class="row pt-2">
               <div class="col">Completion date:</div>
-              <div class="col-lg-6">
+              <div class="col-lg-3">
                 <input class="form-control" required="required" id="completion_date" name="completion_date"
-                      laceholder="DD/MM/YYY" type="text" readonly="readonly"
-                      value="{{ cases_details['completion_date'] }}" />
+                      placeholder="DD/MM/YYY" type="text" />
+              </div>
+              <div class="col-lg-3">
+                <input  required="required"  class="form-control" type="time" name="completion_time">
               </div>
             </div>
             <div class="row pt-2">
@@ -150,21 +152,6 @@
               <button type="submit" class="btn {{ config['APP_USER'] }}-bg-button btn-lg">Send to buyer's conveyancer</button>
             </div>
           </div>
-
-          <!--DEMO ONLY. Out of context. For proof of concept demo only.-->
-          <div class="my-5">
-            <div class="demo-only-section">
-              <div class="form-group row mb-0">
-                <label for="completion_time" class="col col-form-label">Set '<i>Completion date</i>' to be in:</label>
-                <div class="input-group col">
-                  <input class="form-control" required="required" id="completion_time" name="completion_time" type="number" step="5" min="5" max="40" />
-                  <div class="input-group-append"><span class="input-group-text">Minutes</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!--END DEMO ONLY CODE-->
-
         </form>
       </div>
     </div>

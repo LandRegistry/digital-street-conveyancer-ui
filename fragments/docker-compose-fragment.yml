@@ -8,7 +8,6 @@ services:
       CONVEYANCER_API_URL: 'http://host.docker.internal:8081/api'
       CASE_MANAGEMENT_API_URL: 'http://case-management-api-a:8080/v1'
       COUNTER_CONVEYANCER_UI_URL: 'http://conveyancer-ui-b:8080'
-      LENDER_MANAGEMENT_API_URL:  'http://lender-management-api-a:8080/v1'
       APP_USER: 'conveyit4u'
     restart: on-failure
     ports:
@@ -35,7 +34,6 @@ services:
       CONVEYANCER_API_URL: 'http://host.docker.internal:8082/api'
       CASE_MANAGEMENT_API_URL: 'http://case-management-api-b:8080/v1'
       COUNTER_CONVEYANCER_UI_URL: 'http://conveyancer-ui-a:8080'
-      LENDER_MANAGEMENT_API_URL:  'http://lender-management-api-b:8080/v1'
       APP_USER: 'propertylaw'
     restart: on-failure
     ports:

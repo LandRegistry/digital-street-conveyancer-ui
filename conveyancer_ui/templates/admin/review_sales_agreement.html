@@ -119,12 +119,13 @@
           </div>
           <div class="row mt-3">
             <div class="col text-center">
-              <input type="hidden" value="{{ csrf_token() }}" id="csrf_token" name="csrf_token">
-              <input type="hidden" value="{{ title_id }}" id="title_id" name="title_id">
-              <button type="buttton" id="submit_button" onclick="submitForm()"
-                      class="btn {{ config['APP_USER'] }}-bg-button btn-blue btn-lg">
-                Accept agreement
-              </button>
+              <form method="post" action="{{ url_for('conveyancer_admin.review_sales_agreement') }}">
+                <input type="hidden" value="{{ csrf_token() }}" id="csrf_token" name="csrf_token">
+                <input type="hidden" value="{{ title_id }}" id="title_id" name="title_id">
+                <button type="submit" id="submit_button" class="btn {{ config['APP_USER'] }}-bg-button btn-blue btn-lg">
+                  Accept agreement
+                </button>
+              </form>
               <br>
               <a href="#" class="font-weight-bold"><u>Negotiate</u></a>
             </div>
@@ -141,35 +142,4 @@
       </div>
     {% endif %}
   </div>
-{% endblock %}
-
-
-{% block bodyEnd %}
-<script>
-    function submitForm() {
-      $("#submit_button").attr("disabled", "disabled");
-      title_id = $("#title_id").val()
-      $.ajax({
-        url: "{{ url_for('conveyancer_admin.review_sales_agreement') }}",
-        type: "POST",
-        data: { "title_id": title_id, "csrf_token": $("#csrf_token").val() },
-        success: function (result) {
-          if (result == "success") {
-            query_str = "title_id={{ title_id }}&case_reference={{ session['case_reference'] }}"
-            url = "{{ config['COUNTER_CONVEYANCER_UI_URL'] }}/user/agreement-transfer-notify?" + query_str
-            window.open(url, '_blank');
-            window.location.href = "{{ url_for('conveyancer_admin.case_list') }}";
-          }
-          else {
-            window.location.href = "{{ url_for('conveyancer_admin.review_sales_agreement', error_message='Something went wrong while saving the agreement') }}";
-          }
-        },
-        error: function (err) {
-          console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
-        }
-      });
-    }
-
-</script>
-{{ super() }}
 {% endblock %}

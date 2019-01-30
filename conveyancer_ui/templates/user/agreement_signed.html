@@ -12,24 +12,6 @@
       <br>will be transferred on <br><strong>{{ completion_date }}</strong>
       <br><br>
       We'll be in touch with any updates<br>
-      <strong>Please now <u><a href="#" onclick="logout_redirect()" class="colour-inherit">logout</a></u></strong>
+      <strong>Please now <u><a href="{{ url_for('login.logout') }}"  class="colour-inherit">logout</a></u></strong>
   </div>
-{% endblock %}
-
-{% block bodyEnd %}
-  <script>
-    function logout_redirect() {
-      // after seller signs, redirect to buyer's conveyancer site notification page
-      {% if is_selling %}
-      url = '{{ config['COUNTER_CONVEYANCER_UI_URL'] }}/user/agreement-transfer-notify?title_id={{ session['title_id'] }}&case_reference={{ session['case_reference'] }}'
-      window.open(url, '_blank');
-      {% else %}
-      // after buyer signs, redirect to countdown page in new tab
-      window.open('{{ url_for('conveyancer_user.countdown') }}', '_blank');
-      {% endif %}
-      // logout
-      window.location.href = "{{ url_for('login.logout') }}";
-    }
-  </script>
-  {{ super() }}
 {% endblock %}

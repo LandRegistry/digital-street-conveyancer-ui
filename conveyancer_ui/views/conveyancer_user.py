@@ -210,27 +210,6 @@ def agreement_info():
     return render_template('app/user/agreement_context.html', is_selling=is_selling)
 
 
-@user.route("/countdown")
-def countdown():
-    try:
-        # Fetch agreement details
-        title_id = str(session['title_id'])
-        url = current_app.config['CONVEYANCER_API_URL'] + '/titles/' + title_id + '/sales-agreement'
-        agreement_res = requests.get(url, headers={'Accept': 'application/json'})
-    except requests.exceptions.RequestException:
-        raise requests.exceptions.RequestException("Conveyancer API is down.")
-    agreement = agreement_res.json()
-
-    # Get date object to change to string
-    completion_date = datetime.strptime(agreement['completion_date'], "%Y-%m-%dT%H:%M:%S")
-    query_str = Markup('/user/complete-notify?title_id=' + title_id + '&case_reference=' + session['case_reference'])
-    return render_template('app/user/countdown.html',
-                           completionDate=completion_date.strftime("%Y-%m-%dT%H:%M:%S"),
-                           serverNowDate=datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-                           counterparty_conveyancer_ui_url=current_app.config['COUNTER_CONVEYANCER_UI_URL'],
-                           notification_url_path=query_str)
-
-
 # Function to check if a case is to buy or sell
 def is_selling_property(case_reference):
     try:
