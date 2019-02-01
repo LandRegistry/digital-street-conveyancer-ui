@@ -255,7 +255,7 @@ def review_sales_agreement():
         if agreement_details_response.status_code == 200:
             agreement_detail = agreement_details_response.json()
             obj_date = datetime.strptime(agreement_detail['completion_date'], '%Y-%m-%dT%H:%M:%S')
-            agreement_detail['completion_date'] = datetime.strftime(obj_date, '%d %B %Y')
+            agreement_detail['completion_date'] = datetime.strftime(obj_date, '%d %B %Y %H:%M')
             if agreement_detail['latest_update_date']:
                 update_date = datetime.strptime(agreement_detail['latest_update_date'], '%Y-%m-%dT%H:%M:%S.%f')
                 agreement_detail['latest_update_date_time'] = datetime.strftime(update_date, '%d/%m/%Y %H:%M:%S')
@@ -386,6 +386,31 @@ def request_mortgage_discharge():
         return redirect(url_for('conveyancer_admin.case_list'))
     else:
         return redirect(url_for('conveyancer_admin.case_list', error_message="Error:" + response.text))
+
+
+@admin.route("/title-details")
+def title_details_popup():
+    url = current_app.config['CONVEYANCER_API_URL'] + '/titles/' + request.args.get('title_number')
+    response = requests.get(url, data=json.dumps({"action": "request_discharge"}),
+                            headers={'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'})
+    if response.status_code == 200:
+        title_data = response.json()
+        return render_template('app/admin/title_details.html', title_data=title_data)
+    else:
+        return render_template('app/admin/title_details.html', error_message="Error:" + response.text)
+
+
+@admin.route("/request-client-id", methods=['GET', 'POST'])
+def request_client_id():
+    if request.method == 'POST':
+       name = request.form.get('client_name')
+       phone_number = request.form.get('client_phone')
+
+        # TODO: send sms to user to verify identity using yoti
+        # TODO: make api call to tie client id to title
+
+    else:
+        return render_template('app/admin/request_id.html')
 
 
 def get_title_number(case_ref):

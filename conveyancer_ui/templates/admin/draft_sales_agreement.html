@@ -70,7 +70,7 @@
               </div>
             </div>
             <div class="row pt-2">
-              <div class="col">Completion date:</div>
+              <div class="col">Completion date and time:</div>
               <div class="col-lg-3">
                 <input class="form-control" required="required" id="completion_date" name="completion_date"
                       placeholder="DD/MM/YYY" type="text" />
@@ -149,7 +149,7 @@
           <div class="row mt-3">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <div class="col text-center">
-              <button type="submit" class="btn {{ config['APP_USER'] }}-bg-button btn-lg">Send to buyer's conveyancer</button>
+              <button type="submit" class="btn {{ config['APP_USER'] }}-bg-button btn-lg">Submit sales agreement</button>
             </div>
           </div>
         </form>

@@ -4,7 +4,7 @@
   <form name="add_charge_form" method="post" action="{{ url_for('conveyancer_admin.add_new_charge_restriction') }}">
     <div class="row">
       <div class="col-lg-7 {{ config['APP_USER'] }}-container">
-        <div class="h3 font-weight-bold">Add new charge and restriction</div>
+        <div class="h3 font-weight-bold">Add new charge and charge restriction</div>
         <div class="row m-lg-2">
           <div class="col h5">
             {{ title_charge["buyer_lender"] | title }} has requested that the following charge and related charge
@@ -35,7 +35,7 @@
             <input type="hidden" name="restriction_text" value="{{ title_charge['restriction_text'] }}"/>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <button type="submit" class="btn font-weight-bold {{ config['APP_USER'] }}-bg-button btn-blue">
-              Add new charge
+              Add new charge and restriction
             </button>
           </div>
         </div>

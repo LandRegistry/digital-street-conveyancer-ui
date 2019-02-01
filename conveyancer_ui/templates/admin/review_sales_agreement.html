@@ -59,7 +59,7 @@
               <div class="col-6">Full</div>
             </div>
             <div class="row pt-2">
-              <div class="col-6"><span class="font-weight-bold">Completion Date:</span></div>
+              <div class="col-6"><span class="font-weight-bold">Completion date and time:</span></div>
               <div class="col-6">{{ agreement_details['completion_date'] }}</div>
             </div>
             <div class="row pt-2">
@@ -72,8 +72,6 @@
               <div class="col-6">{{ agreement_details['purchase_price'] }}</div>
             </div>
             <div class="row pt-2">
-              <div class="col-6"></div>
-
               <div class="col-6"><span class="font-weight-bold">Deposit(<span>{{ agreement_details['deposit_currency_code'] }}</span>):</span>
               </div>
               <div class="col-6">{{ agreement_details['deposit'] }}</div>
@@ -123,7 +121,7 @@
                 <input type="hidden" value="{{ csrf_token() }}" id="csrf_token" name="csrf_token">
                 <input type="hidden" value="{{ title_id }}" id="title_id" name="title_id">
                 <button type="submit" id="submit_button" class="btn {{ config['APP_USER'] }}-bg-button btn-blue btn-lg">
-                  Accept agreement
+                  Accept sales agreement
                 </button>
               </form>
               <br>

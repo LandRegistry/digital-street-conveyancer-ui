@@ -4,10 +4,11 @@
   <form name="agreement_form" action="{{ url_for('conveyancer_user.agreement_signing') }}">
     <div class="row">
       <div class="col-lg-8 {{ config['APP_USER'] }}-container">
-        <h2>Sign your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements</h2>
+        <h2>Agree to sign your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements</h2>
         <p class="mb-0">
-          Please agree to your sales agreement{% if not is_selling %}, mortgage terms {% endif %} and property transfer. You'll confirm this on the next screen.
-          You can view your full documents by clicking on the links below.
+          Please agree to your sales agreement{% if not is_selling %}, mortgage terms {% endif %} and transfer agreements.
+          You'll verify this on the next screen.
+          </br>You can view your full documents below.
         </p>
         <strong>
           {{ address['house_name_number'] + ' ' + address['street'] }}<br>

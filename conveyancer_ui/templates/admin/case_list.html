@@ -1,4 +1,9 @@
 {% extends "app/theme/"+config['APP_USER']+".html" %}
+<!-- TODO: Bootstrap should be not have to be loaded here since it is built in the js. Modal fails without it  -->
+{% block head %}
+  {{ super() }}
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" ></script>
+{% endblock %}
 
 {% block content %}  
   <div class="m-auto pt-3">
@@ -49,12 +54,14 @@
                       </td>
                       <td>
                         {% if case['title_number'] %}
-                          {{ case['title_number'] }}
+                          {% if status_dict[case['title_number']] and status_dict[case['title_number']] != "request_issuance_pending" %}
+                            <a  href="#" onclick="open_title_modal(this)" data-title="{{ case['title_number'] }}"  data-target="#titleDetailsModal">{{ case['title_number'] }}</a>
+                          {% else %}
+                            {{ case['title_number'] }}
+                          {% endif %}
                         {% endif %}
                       </td>
-                      {% if not status_dict %}
-                        <td></td>
-                      {% elif status_dict[case['title_number']] %}
+                      {% if status_dict[case['title_number']] %}
                         <td>
                           {% if status_dict[case['title_number']] == "request_issuance_pending" %}
                             Pending retrieval
@@ -78,7 +85,7 @@
                             Waiting for signatures
                           {% elif status_dict[case['title_number']] == "sales_agreement_completed" %}
                             HMLR processing transfer
-                          {% elif status_dict[case['title_number']] == "land_title_transfered" %}
+                          {% elif status_dict[case['title_number']] == "land_title_transferred" %}
                             Property transfer complete
                           {% endif %}
                         </td>
@@ -124,12 +131,14 @@
                       </td>
                       <td>
                         {% if case['title_number'] %}
-                          {{ case['title_number'] }}
+                          {% if status_dict[case['title_number']] and status_dict[case['title_number']] != "request_issuance_pending" %}
+                            <a  href="#" onclick="open_title_modal(this)" data-title="{{ case['title_number'] }}"  data-target="#titleDetailsModal">{{ case['title_number'] }}</a>
+                          {% else %}
+                            {{ case['title_number'] }}
+                          {% endif %}
                         {% endif %}
                       </td>
-                      {% if not status_dict %}
-                          <td></td>
-                      {% elif status_dict[case['title_number']] %}
+                      {% if status_dict[case['title_number']] %}
                         <td>
                           {% if status_dict[case['title_number']] == "request_issuance_pending" %}
                               Pending retrieval
@@ -147,16 +156,12 @@
                             Waiting for signatures
                           {% elif status_dict[case['title_number']] == "sales_agreement_completed" %}
                             HMLR processing transfer
-                          {% elif status_dict[case['title_number']] == "land_title_transfered" %}
+                          {% elif status_dict[case['title_number']] == "land_title_transferred" %}
                             Property transfer complete
                           {% endif %}
                         </td>
                       {% else %}
-                        <td>
-                          <a onclick="requestIssuance('{{ case['title_number'] }}','{{ case['case_reference'] }}',this)" href="#">
-                              Request title from HMLR
-                          </a>
-                        </td>
+                        <td>Waiting for client ID</td>
                       {% endif %}
                     </tr>
                   {% endfor %}
@@ -172,9 +177,12 @@
       </div>
     {% endif %}
   </div>
+<div class="modal fade" id="titleDetailsModal" tabindex="-1" role="dialog" aria-labelledby="titleDetailsModalLabel" aria-hidden="true">
+</div>
 {% endblock %}
 
 {% block bodyEnd %}
+  {{ super() }}
   <script>    
     function requestIssuance(title_number,case_reference, el) {
       parent_row = $(el).parents('tr').eq(0);
@@ -202,6 +210,26 @@
         }
       });
     }
+
+  // open title details modal
+  function open_title_modal(elm){
+      $.ajax({
+      url: '{{ url_for("conveyancer_admin.title_details_popup") }}',
+      data: {
+          title_number: $(elm).attr('data-title')
+      },
+      type: 'GET',
+      success: function(res) {
+        //Populate the Pop up
+         $('#titleDetailsModal').html(res);
+
+        // Trigger the Pop Up
+        $('#titleDetailsModal').modal('show');
+      },
+      error: function(error) {
+          console.log(error);
+      }
+    });
+  }
   </script>
-  {{ super() }}
 {% endblock %}

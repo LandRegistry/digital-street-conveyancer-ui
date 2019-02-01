@@ -3,7 +3,16 @@
 {% block content %}
   <div class="col-lg-7 {{ config['APP_USER'] }}-container text-center">
       <h1 class="font-weight-bold">Great news!</h1>
-      You've signed your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements<br>
+      <h3>Your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements have been signed</h3><br>
+      {% if is_selling %}
+        <img src="{{ url_for('static', filename='images/app/confirmation_signed_agreements_seller.png') }}"
+             class="img-responsive confirmation-image">
+      {% else %}
+        <img src="{{ url_for('static', filename='images/app/confirmation_signed_agreements_buyer.png') }}"
+             class="img-responsive confirmation-image">
+      {% endif %}
+      <br>
+      <br>
       {{ address['house_name_number'] + ' ' + address['street'] }}<br>
       {{ address['town_city'] }}<br>
       {{ address['county'] }}<br>
