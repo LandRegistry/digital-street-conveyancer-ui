@@ -53,3 +53,4 @@ services:
     # Docker-compose will ensure logstash is started before the application starts.
     depends_on:
       - logstash
+    command: ["./runb.sh"]
