@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, url_for, request, redirect, current_app, session
-import requests
 import json
 from datetime import datetime
-from datetime import timedelta
+
+import requests
+from flask import (Blueprint, current_app, redirect, render_template, request,
+                   session, url_for)
+
 from babel import numbers
 from conveyancer_ui.views.login import login_required
 
@@ -89,8 +91,10 @@ def request_issuance():
                                  "owner": case['client']}
                     # Make request for issuance call
                     url = current_app.config['CONVEYANCER_API_URL'] + '/titles/' + request.args['title_number']
-                    response = requests.post(url, data=json.dumps(case_data),
-                                             headers={'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'})
+                    response = requests.post(
+                        url,
+                        data=json.dumps(case_data),
+                        headers={'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'})
                     if response.status_code == 200:
                         return "true"
                     else:
@@ -142,6 +146,18 @@ def draft_sales_agreement():
         time_to_add = datetime.strptime(request.form.get('completion_time'), '%H:%M').time()
         completion_date_obj = datetime.combine(completion_date_obj, time_to_add)
         completion_date = datetime.strftime(completion_date_obj, '%Y-%m-%dT%H:%M:%SZ')
+        payment_settler = {
+            "organisation": current_app.config['PAYMENT_SETTLER_PARTY_ORGANISATION'],
+            "locality": current_app.config['PAYMENT_SETTLER_PARTY_LOCALITY'],
+            "country": current_app.config['PAYMENT_SETTLER_PARTY_COUNTRY']
+        }
+        if current_app.config.get('PAYMENT_SETTLER_PARTY_STATE'):
+            payment_settler['state'] = current_app.config['PAYMENT_SETTLER_PARTY_STATE']
+        if current_app.config.get('PAYMENT_SETTLER_PARTY_ORGANISATIONAL_UNIT'):
+            payment_settler['organisational_unit'] = current_app.config['PAYMENT_SETTLER_PARTY_ORGANISATIONAL_UNIT']
+        if current_app.config.get('PAYMENT_SETTLER_PARTY_COMMON_NAME'):
+            payment_settler['common_name'] = current_app.config['PAYMENT_SETTLER_PARTY_COMMON_NAME']
+
         contract_data = {
             "buyer_conveyancer": cases_details['counterparty_conveyancer_org'],
             "buyer": buyer_details,
@@ -157,11 +173,7 @@ def draft_sales_agreement():
             "contents_price": 0.0,
             "guarantee": request.form.get('title_guarantee'),
             "contents_price_currency_code": "GBP",
-            "payment_settler": {
-                "organisation": "Payment",
-                "locality": "Plymouth",
-                "country": "GB"
-            }
+            "payment_settler": payment_settler
         }
         try:
             # draft a sales agreement for a title
@@ -249,7 +261,9 @@ def review_sales_agreement():
             else:
                 fetch_case_details("buyer", "seller", cases_details)
         # make API call to fetch agreement values
-        url = current_app.config['CONVEYANCER_API_URL'] + '/titles/' + cases_details['title_number'] + '/sales-agreement'
+        url = '{0}/titles/{1}/sales-agreement'.format(
+            current_app.config['CONVEYANCER_API_URL'],
+            cases_details['title_number'])
         agreement_details_response = requests.get(url, headers={'Accept': 'application/json'})
 
         if agreement_details_response.status_code == 200:
@@ -262,16 +276,23 @@ def review_sales_agreement():
             else:
                 agreement_detail['latest_update_date_time'] = ""
 
-            agreement_detail['purchase_price'] = numbers.format_currency(agreement_detail['purchase_price'],
-                                                                         agreement_detail['purchase_price_currency_code'])
-            agreement_detail['deposit'] = numbers.format_currency(agreement_detail['deposit'],
-                                                                  agreement_detail['deposit_currency_code'])
-            agreement_detail['balance'] = numbers.format_currency(agreement_detail['balance'],
-                                                                  agreement_detail['balance_currency_code'])
-            agreement_detail['deposit_currency_code'] = numbers.get_currency_symbol(agreement_detail['deposit_currency_code'])
-            agreement_detail['balance_currency_code'] = numbers.get_currency_symbol(agreement_detail['balance_currency_code'])
-            agreement_detail['contents_price_currency_code'] = numbers.get_currency_symbol(agreement_detail['contents_price_currency_code'])
-            agreement_detail['purchase_price_currency_code'] = numbers.get_currency_symbol(agreement_detail['purchase_price_currency_code'])
+            agreement_detail['purchase_price'] = numbers.format_currency(
+                agreement_detail['purchase_price'],
+                agreement_detail['purchase_price_currency_code'])
+            agreement_detail['deposit'] = numbers.format_currency(
+                agreement_detail['deposit'],
+                agreement_detail['deposit_currency_code'])
+            agreement_detail['balance'] = numbers.format_currency(
+                agreement_detail['balance'],
+                agreement_detail['balance_currency_code'])
+            agreement_detail['deposit_currency_code'] = numbers.get_currency_symbol(
+                agreement_detail['deposit_currency_code'])
+            agreement_detail['balance_currency_code'] = numbers.get_currency_symbol(
+                agreement_detail['balance_currency_code'])
+            agreement_detail['contents_price_currency_code'] = numbers.get_currency_symbol(
+                agreement_detail['contents_price_currency_code'])
+            agreement_detail['purchase_price_currency_code'] = numbers.get_currency_symbol(
+                agreement_detail['purchase_price_currency_code'])
             return render_template('app/admin/review_sales_agreement.html',
                                    agreement_details=agreement_detail,
                                    title_details=cases_details,
@@ -299,24 +320,28 @@ def add_new_charge_restriction():
 
     # Form posted
     if request.method == 'POST':
+        lender_party = {
+            "organisation": current_app.config['BUYER_LENDER_PARTY_ORGANISATION'],
+            "locality": current_app.config['BUYER_LENDER_PARTY_LOCALITY'],
+            "country": current_app.config['BUYER_LENDER_PARTY_COUNTRY']
+        }
+        if current_app.config.get('BUYER_LENDER_PARTY_STATE'):
+            lender_party['state'] = current_app.config['BUYER_LENDER_PARTY_STATE']
+        if current_app.config.get('BUYER_LENDER_PARTY_ORGANISATIONAL_UNIT'):
+            lender_party['organisational_unit'] = current_app.config['BUYER_LENDER_PARTY_ORGANISATIONAL_UNIT']
+        if current_app.config.get('BUYER_LENDER_PARTY_COMMON_NAME'):
+            lender_party['common_name'] = current_app.config['BUYER_LENDER_PARTY_COMMON_NAME']
+
         data = {
             "restriction_id": "NA",
             "restriction_type": "CBCR",
             "restriction_text": request.form.get('restriction_text'),
-            "consenting_party": {
-                "organisation": "Lender1",
-                "locality": "Plymouth",
-                "country": "GB"
-            },
+            "consenting_party": lender_party,
             "signed_actions": "add",
             "date": request.form.get('date'),
             "charge": {
                 "date": request.form.get('date'),
-                "lender": {
-                    "organisation": "Lender1",
-                    "locality": "Plymouth",
-                    "country": "GB",
-                },
+                "lender": lender_party,
                 "amount": request.form.get('amount'),
                 "amount_currency_code": request.form.get('amount_currency')
             }
@@ -370,8 +395,8 @@ def add_new_charge_restriction():
                 for placeholder in placeholders:
                     if placeholder['field'] in title_charge:
                         restriction_text = title_charge['restriction_text']
-                        title_charge['restriction_text'] = restriction_text.replace(placeholder['placeholder_str'],
-                                                                                    str(title_charge[placeholder['field']]))
+                        title_charge['restriction_text'] = restriction_text.replace(
+                            placeholder['placeholder_str'], str(title_charge[placeholder['field']]))
         return render_template('app/admin/add_charge_restriction.html', title_charge=title_charge, admin=True)
 
 
@@ -403,12 +428,11 @@ def title_details_popup():
 @admin.route("/request-client-id", methods=['GET', 'POST'])
 def request_client_id():
     if request.method == 'POST':
-       name = request.form.get('client_name')
-       phone_number = request.form.get('client_phone')
-
-        # TODO: send sms to user to verify identity using yoti
-        # TODO: make api call to tie client id to title
-
+        # name = request.form.get('client_name')
+        # phone_number = request.form.get('client_phone')
+        # TODO(Richa): send sms to user to verify identity using yoti
+        # TODO(Richa): make api call to tie client id to title
+        pass
     else:
         return render_template('app/admin/request_id.html')
 

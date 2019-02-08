@@ -1,12 +1,14 @@
-from flask import Blueprint, render_template, url_for, request, redirect, current_app, session, Markup
-import requests
-from datetime import datetime
-from babel import numbers
-from . import utils
-from conveyancer_ui.views.login import login_required
-from conveyancer_ui.views.login import logout
 import json
+from datetime import datetime
 
+import requests
+from flask import (Blueprint, current_app, redirect, render_template, request,
+                   session, url_for)
+
+from babel import numbers
+from conveyancer_ui.views.login import login_required, logout
+
+from . import utils
 
 # This is the blueprint object that gets registered into the app in blueprints.py.
 user = Blueprint('conveyancer_user', __name__)
@@ -30,7 +32,10 @@ def accept_agreement():
         agreement = agreement_res.json()
 
         # Convert purchase price from float to currency format
-        purchase_price = numbers.format_currency(agreement['purchase_price'], agreement['purchase_price_currency_code'])
+        purchase_price = numbers.format_currency(
+            agreement['purchase_price'],
+            agreement['purchase_price_currency_code']
+        )
 
         # Case reference is required in entire journey, so if not found redirect to index page
         if session.get('case_reference'):
@@ -40,7 +45,7 @@ def accept_agreement():
 
         # get buyer lender name
         buyer_lender = "Gringott's Bank"
-        
+
         is_selling = is_selling_property(case_reference)
 
         return render_template('app/user/accept_agreement.html', address=title['title']['address'],
@@ -123,91 +128,72 @@ def agreement_signed():
                            completion_date=completion_date, is_selling=is_selling)
 
 
-@user.route("/complete-notify")
-def complete_notify():
-    # In the previous step user would have logged out so read values from url to be available in session
-    session['title_id'] = request.args.get('title_id')
-    # Fetch case reference from title id
-    case_res = requests.get(current_app.config['CASE_MANAGEMENT_API_URL'] + '/cases',
-                            params={"title_number": session['title_id']}, headers={'Accept': 'application/json'})
-    if case_res.status_code == 200:
-        cases = case_res.json()
-
-        # Save to session
-        for case in cases:
-            session['case_reference'] = case['case_reference']
-    return render_template('app/user/complete_notify.html')
-
-
 @user.route("/transfer-complete")
 @login_required
 def transfer_complete():
-    # Case reference is required in entire journey, so if not found redirect to index page
-    if session.get('case_reference'):
-        case_reference = session['case_reference']
-    else:
-        return redirect(url_for('index.index_page'))
-    is_selling = is_selling_property(case_reference)
+    # The user will be redirected from a link in an SMS message so read values from url to be available in session
+    session['title_id'] = request.args.get('title_id')
 
-    # after the transfer the seller conveyancer object does not have title details so fetch from case management
-    if not is_selling:
-        try:
-            title_id = str(session['title_id'])
-            # Call to fetch title address
-            title_res = requests.get(current_app.config['CONVEYANCER_API_URL'] + '/titles/' + title_id,
-                                     headers={'Accept': 'application/json'})
-        except requests.exceptions.RequestException:
-            raise requests.exceptions.RequestException("Conveyancer API is down.")
+    if session['title_id']:
+        is_selling = None
+        case_reference = None
 
-        # Response
-        title = title_res.json()
-        address = title['title']['address']
-    else:
         try:
-            # Call to fetch title address
-            case_res = requests.get(current_app.config['CASE_MANAGEMENT_API_URL'] + '/cases/' + case_reference,
+            # Fetch case details
+            case_res = requests.get(current_app.config['CASE_MANAGEMENT_API_URL'] + '/cases',
+                                    params={'title_number': str(session['title_id'])},
                                     headers={'Accept': 'application/json'})
+            case = case_res.json()[0]
+            case_reference = case['case_reference']
+            session['case_reference'] = case_reference
+            # check if case is to sell or buy
+            is_selling = case['case_type'] == 'sell'
         except requests.exceptions.RequestException:
             raise requests.exceptions.RequestException("Case management API is down.")
+        except:
+            return "Title number not found in any cases."
 
-            # Response
-        title = case_res.json()
-        address = title['address']
-    return render_template('app/user/transfer_complete.html', is_selling=is_selling, address=address)
+        # after the transfer the seller conveyancer object does not have title details so fetch from case management
+        if not is_selling:
+            try:
+                title_id = str(session['title_id'])
+                # Call to fetch title address
+                title_res = requests.get(current_app.config['CONVEYANCER_API_URL'] + '/titles/' + title_id,
+                                        headers={'Accept': 'application/json'})
+            except requests.exceptions.RequestException:
+                raise requests.exceptions.RequestException("Conveyancer API is down.")
 
-
-@user.route("/agreement-transfer-notify")
-def agreement_transfer_notify():
-    # log users out when on this screen to start next seller/buyer flow
-    logout()
-
-    # save title id back in session after log out
-    session['title_id'] = request.args.get('title_id')
-    # Fetch case reference from title id
-    case_res = requests.get(current_app.config['CASE_MANAGEMENT_API_URL'] + '/cases',
-                            params={"title_number": session['title_id']}, headers={'Accept': 'application/json'})
-    if case_res.status_code == 200:
-        cases = case_res.json()
-
-        # Save to session
-        for case in cases:
-            session['case_reference'] = case['case_reference']
-            # check if case is to sell or buy
-            is_selling = is_selling_property(case['case_reference'])
-
-    return render_template('app/user/agreement_transfer_notify.html', is_selling=is_selling)
-
+            title = title_res.json()
+            address = title['title']['address']
+        else:
+            address = case['address']
+        return render_template('app/user/transfer_complete.html', is_selling=is_selling, address=address)
+    else:
+        return redirect(url_for('index.index_page'))
 
 @user.route("/agreement-context")
 @login_required
 def agreement_info():
-    # In the previous step user would have logged out so read values from url to be available in session
-    session['case_reference'] = request.args.get('case_reference')
+    # The user will be redirected from a link in an SMS message so read values from url to be available in session
     session['title_id'] = request.args.get('title_id')
 
-    # check if case is to sell or buy
-    is_selling = is_selling_property(session['case_reference'])
-    return render_template('app/user/agreement_context.html', is_selling=is_selling)
+    if session['title_id']:
+        try:
+            # Fetch case details
+            case_res = requests.get(current_app.config['CASE_MANAGEMENT_API_URL'] + '/cases',
+                                    params={'title_number': str(session['title_id'])},
+                                    headers={'Accept': 'application/json'})
+            case = case_res.json()[0]
+            session['case_reference'] = case['case_reference']
+            # check if case is to sell or buy
+            is_selling = case['case_type'] == 'sell'
+            return render_template('app/user/agreement_context.html', is_selling=is_selling)
+        except requests.exceptions.RequestException:
+            raise requests.exceptions.RequestException("Case management API is down.")
+        except:
+            return "Title number not found in any cases."
+    else:
+        return redirect(url_for('index.index_page'))
 
 
 # Function to check if a case is to buy or sell
@@ -228,4 +214,6 @@ def is_selling_property(case_reference):
         else:
             return False
     else:
-        raise requests.exceptions.RequestException('Case Management API return error code: ' + str(case_res.status_code))
+        raise requests.exceptions.RequestException(
+            'Case Management API return error code: ' + str(case_res.status_code)
+        )
