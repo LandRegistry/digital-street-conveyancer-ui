@@ -87,6 +87,12 @@
                             HMLR processing transfer
                           {% elif status_dict[case['title_number']] == "land_title_transferred" %}
                             Property transfer complete
+                          {% elif status_dict[case['title_number']] == "payment_received_in_escrow" %}
+                            Payment settler has funds
+                          {% elif status_dict[case['title_number']] == "ERROR" %}
+                            Error
+                          {% else %}
+                            Unknown
                           {% endif %}
                         </td>
                       {% else %}
