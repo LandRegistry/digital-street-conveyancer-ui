@@ -1,12 +1,12 @@
 import json
-from datetime import datetime
-
 import requests
+
+from babel import numbers
+from conveyancer_ui.views.auth import login_required
+from datetime import datetime
 from flask import (Blueprint, current_app, redirect, render_template, request,
                    session, url_for)
 
-from babel import numbers
-from conveyancer_ui.views.login import login_required
 
 # This is the blueprint object that gets registered into the app in blueprints.py.
 admin = Blueprint('conveyancer_admin', __name__)
@@ -73,6 +73,7 @@ def case_list():
 
 
 @admin.route("/request-issuance", methods=['GET', 'POST'])
+@login_required
 def request_issuance():
     try:
         # for ajax request
@@ -414,6 +415,7 @@ def request_mortgage_discharge():
 
 
 @admin.route("/title-details")
+@login_required
 def title_details_popup():
     url = current_app.config['CONVEYANCER_API_URL'] + '/titles/' + request.args.get('title_number')
     response = requests.get(url, data=json.dumps({"action": "request_discharge"}),
@@ -426,13 +428,24 @@ def title_details_popup():
 
 
 @admin.route("/request-client-id", methods=['GET', 'POST'])
+@login_required
 def request_client_id():
     if request.method == 'POST':
-        # name = request.form.get('client_name')
-        # phone_number = request.form.get('client_phone')
-        # TODO(Richa): send sms to user to verify identity using yoti
-        # TODO(Richa): make api call to tie client id to title
-        pass
+        try:
+            response = requests.post(
+                current_app.config['CONVEYANCER_API_URL'] + '/yoti-signin-request',
+                headers={'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'},
+                data=json.dumps({
+                    "client_phone_number": request.form.get('client_phone'),
+                    "client_full_name": request.form.get('client_name'),
+                    "user_callback_url": url_for('auth.register_yoti', _external=True)
+                })
+            )
+            if not response.status_code == 200:
+                return "Conveyancer API returned " + str(response.status_code)
+        except requests.exceptions.RequestException:
+            return "Conveyancer API is down."
+        return redirect(url_for('conveyancer_admin.case_list'))
     else:
         return render_template('app/admin/request_id.html')
 

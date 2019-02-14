@@ -4,6 +4,7 @@
 # review the Git history for this file and consider each modification
 
 environment.sh
+keys
 
 ### OSX ###
 *.DS_Store

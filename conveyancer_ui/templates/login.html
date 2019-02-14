@@ -19,7 +19,7 @@
           <div class="container-fluid h-100">
             <div class="row justify-content-center align-items-center">
               <div class="col">
-                <form action="{{ url_for('login.user_login') }}" method="post">
+                <form action="{{ url_for('auth.login') }}" method="post">
                   <div class="form-group text-left">
                     <label for="email">Email:</label><br>
                     <input type="text" name="email" id="email" class="form-control" required="required">

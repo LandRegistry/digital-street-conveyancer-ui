@@ -7,7 +7,12 @@ services:
     environment:
       CONVEYANCER_API_URL: 'http://host.docker.internal:8081/api'
       CASE_MANAGEMENT_API_URL: 'http://case-management-api-a:8080/v1'
-      COUNTER_CONVEYANCER_UI_URL: 'http://conveyancer-ui-b:8080'
+      YOTI_APPLICATION_ID: ''
+      YOTI_CLIENT_SDK_ID: ''
+      YOTI_LOGIN_SCENARIO_ID: ''
+      YOTI_REGISTER_SCENARIO_ID: ''
+      YOTI_SIGN_SCENARIO_ID: ''
+      YOTI_KEY_FILE_PATH: './keys/Conveyancer A (Dev Environment)-access-security.pem'
       APP_USER: 'conveyit4u'
     restart: on-failure
     ports:
@@ -33,7 +38,12 @@ services:
     environment:
       CONVEYANCER_API_URL: 'http://host.docker.internal:8082/api'
       CASE_MANAGEMENT_API_URL: 'http://case-management-api-b:8080/v1'
-      COUNTER_CONVEYANCER_UI_URL: 'http://conveyancer-ui-a:8080'
+      YOTI_APPLICATION_ID: ''
+      YOTI_CLIENT_SDK_ID: ''
+      YOTI_LOGIN_SCENARIO_ID: ''
+      YOTI_REGISTER_SCENARIO_ID: ''
+      YOTI_SIGN_SCENARIO_ID: ''
+      YOTI_KEY_FILE_PATH: './keys/Conveyancer B (Dev Environment)-access-security.pem'
       APP_USER: 'propertylaw'
     restart: on-failure
     ports:

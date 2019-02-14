@@ -1,16 +1,38 @@
 {% extends "app/theme/"+config['APP_USER']+".html" %}
 
+{% if config.get('YOTI_AUTH') == 'TRUE' %}
+  {% block head %}
+      {{ super() }}
+      <script src="https://sdk.yoti.com/clients/browser.2.2.0.js"></script>
+  {% endblock %}
+{% endif %}
+
 {% block content %}
+  {% if error_message %}
+  <div class="row">
+    <div class="col-7 mx-auto pt-3">
+      <div class="alert alert-danger">
+        {{ error_message }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
   <div id="confirm-row" class="row">
     <div class="col-lg-7 {{ config['APP_USER'] }}-container text-center">
-      <h4>Use your Yoti ID to verify that you're happy for your sales{% if not is_selling %}, mortgage {% endif %}
-        and transfer agreements to be signed</h4><br>
-      <form id="confirm-form" action="{{ url_for('conveyancer_user.agreement_signing') }}" method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <a href="javascript:;" onclick="startSigning();">
-          <i class="fas fa-fingerprint fa-fw fa-6x {% if config['APP_USER'] == 'conveyit4u' %} text-white {% endif %}"></i>
-        </a>
-      </form>
+      {% if config.get('YOTI_AUTH') == 'TRUE' %}
+        <h4>Use your Yoti ID to verify that you're happy for your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements to be signed</h4><br>
+        <span data-yoti-application-id="{{ config['YOTI_APPLICATION_ID'] }}" data-yoti-type="instant" data-yoti-scenario-id="{{ config['YOTI_SIGN_SCENARIO_ID'] }}">
+          Use Yoti
+        </span>
+      {% else %}
+        <h4>Use your touch ID to verify that you're happy for your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements to be signed</h4><br>
+        <form id="confirm-form" action="{{ url_for('conveyancer_user.agreement_signing') }}" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <a href="javascript:;" onclick="startSigning();">
+            <i class="fas fa-fingerprint fa-fw fa-6x {% if config['APP_USER'] == 'conveyit4u' %} text-white {% endif %}"></i>
+          </a>
+        </form>
+      {% endif %}
     </div>
   </div>
   <div id="signing-row" class="row text-center" style="display:none">
@@ -24,14 +46,20 @@
 {% endblock %}
 
 {% block bodyEnd %}
-  <script>
-    function startSigning() {
-      var formRow = document.getElementById('confirm-row');
-      var signingRow = document.getElementById('signing-row');
-      formRow.style.display = "none";
-      signingRow.style.display = "block";
-      document.getElementById('confirm-form').submit();
-    }
-  </script>
+  {% if config.get('YOTI_AUTH') == 'TRUE' %}
+    <script>
+        _ybg.init()
+    </script>
+  {% else %}
+    <script>
+      function startSigning() {
+        var formRow = document.getElementById('confirm-row');
+        var signingRow = document.getElementById('signing-row');
+        formRow.style.display = "none";
+        signingRow.style.display = "block";
+        document.getElementById('confirm-form').submit();
+      }
+    </script>
+  {% endif %}
   {{ super() }}
 {% endblock %}

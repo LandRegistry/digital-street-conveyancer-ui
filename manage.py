@@ -14,7 +14,7 @@ def runserver(port=7001):
     os.environ["LOG_LEVEL"] = "DEBUG"
     os.environ["COMMIT"] = "LOCAL"
 
-    app.run(debug=True, port=int(port), ssl_context=('/supporting-files/ssl.cert', '/supporting-files/ssl.key'))
+    app.run(debug=True, port=int(port), ssl_context=(os.environ['SSL_CERT_LOCATION'], os.environ['SSL_KEY_LOCATION']))
 
 
 if __name__ == "__main__":

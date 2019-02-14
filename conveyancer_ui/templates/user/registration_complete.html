@@ -1,0 +1,25 @@
+{% extends "app/theme/"+config['APP_USER']+".html" %}
+
+
+{% block main %}
+  <div class="vertical-center">
+    <div class="container">
+      {% if error_message %}
+        <div class="row">
+          <div class="col-7 mx-auto pt-1">
+            <div class="alert alert-danger">
+              {{ error_message }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      <div class="row">
+        <main role="main" class="col-lg-6 ml-sm-auto {{ config['APP_USER'] }}-container">
+            <h1>Thank you for sharing your Yoti ID with us</h1>
+            <img class="img-responsive w-15" src="{{ url_for('static', filename='images/app/yoti_logo.png') }}" alt="Yoti Verified">
+            <p>Your solicitor will be in touch with you with any updates</p>
+            <p>You can <a href="{{ url_for('auth.logout') }}" class="colour-inherit" style="text-decoration: underline">logout</a></p>            
+        </main>
+    </div>
+  </div>
+{% endblock %}

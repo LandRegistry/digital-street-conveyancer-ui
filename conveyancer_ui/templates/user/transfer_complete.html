@@ -15,7 +15,7 @@
       <img src="{{ url_for('static', filename='images/app/confirmation_screen_seller.png') }}" class="img-responsive w-15">
       <br>
       <p class="lead">
-        <strong>Please remember to <a href="{{ url_for('login.logout') }}" class="colour-inherit" style="text-decoration: underline">logout</a></strong>
+        <strong>Please remember to <a href="{{ url_for('auth.logout') }}" class="colour-inherit" style="text-decoration: underline">logout</a></strong>
       </p>
     </div>
   {% else %}
@@ -34,7 +34,7 @@
       </p>
       <img src="{{ url_for('static', filename='images/app/confirmation_screen_buyer.png') }}" class="img-responsive w-15">
       <br>
-      <strong>Please remember to <a href="{{ url_for('login.logout') }}" class="colour-inherit" style="text-decoration: underline">logout</a></strong>
+      <strong>Please remember to <a href="{{ url_for('auth.logout') }}" class="colour-inherit" style="text-decoration: underline">logout</a></strong>
       </div>
     </div>
   {% endif %}

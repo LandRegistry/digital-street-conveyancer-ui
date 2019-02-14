@@ -1,0 +1,59 @@
+{% extends "app/theme/"+config['APP_USER']+".html" %}
+
+{% block head %}
+    {{ super() }}
+    <script src="https://sdk.yoti.com/clients/browser.2.2.0.js"></script>
+{% endblock %}
+
+{% block main %}
+  <div class="vertical-center pt-5">
+    <div class="container">
+      {% if error_message %}
+        <div class="row">
+          <div class="col-7 mx-auto pt-1">
+            <div class="alert alert-danger">
+              {{ error_message }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      <div class="row">
+        <main role="main" class="col-lg-6 ml-sm-auto {{ config['APP_USER'] }}-container">
+            <h1>Thank you for choosing {{ config['APP_USER'] }} to represent you!</h1>
+            <p class="lead">
+                We need to carry out some checks before proceeding.<br>
+                To do this you'll need to share your Yoti ID with us.
+            </p>
+
+            <p>
+                We'll ask you to share your:
+            </p>
+            <div class="row">
+                <div class="yoti-details">
+                    <ul> 
+                        <li>Photo ID</li>
+                        <li>Remember Me ID</li>
+                        <li>Name</li>
+                        <li>Email address</li>
+                        <li>Phone number</li>
+                        <li>Postal Address</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <span data-yoti-application-id="{{ config['YOTI_APPLICATION_ID'] }}" data-yoti-type="instant" data-yoti-scenario-id="{{ config['YOTI_REGISTER_SCENARIO_ID'] }}">
+                    Continue with Yoti
+                </span>
+            </div>
+        </main>
+    </div>
+  </div>
+{% endblock %}
+
+{% block bodyEnd %}
+    <script>
+        _ybg.init()
+    </script>
+    {{ super() }}
+{% endblock %}

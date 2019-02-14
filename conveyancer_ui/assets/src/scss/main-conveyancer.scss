@@ -243,6 +243,15 @@ ol.propertylaw-agreement>li:before {
     white-space: normal
 }
 
+.yoti-details {
+    float: none;
+    margin: 0 auto;
+}
+
+.yoti-details ul {
+    text-align: left;
+}
+
 /* xs < 768 */
 @media screen and (max-width: 767px) {
     input[type=checkbox]

@@ -1,20 +1,25 @@
 import json
-from datetime import datetime
-
 import requests
-from flask import (Blueprint, current_app, redirect, render_template, request,
-                   session, url_for)
-
-from babel import numbers
-from conveyancer_ui.views.login import login_required, logout
 
 from . import utils
+from datetime import datetime
+from flask import (Blueprint, current_app, redirect, render_template, request, session, url_for)
+from babel import numbers
+from conveyancer_ui.views.auth import yoti_login_required
+
 
 # This is the blueprint object that gets registered into the app in blueprints.py.
 user = Blueprint('conveyancer_user', __name__)
 
 
+@user.route("/registration-complete")
+@yoti_login_required
+def registration_complete():
+    return render_template('app/user/registration_complete.html')
+
+
 @user.route("/accept-agreement")
+@yoti_login_required
 def accept_agreement():
     try:
         title_id = str(session['title_id'])
@@ -55,12 +60,14 @@ def accept_agreement():
 
 
 @user.route("/agreement-signing", methods=['GET', 'POST'])
+@yoti_login_required
 def agreement_signing():
     if request.method == 'GET':
         # Check if case is to buy or sell
         is_selling = is_selling_property(session['case_reference'])
 
-        return render_template('app/user/agreement_signing.html', is_selling=is_selling)
+        return render_template('app/user/agreement_signing.html', is_selling=is_selling,
+                               error_message=request.args.get('error_message'))
     elif request.method == 'POST':
         # Invoke the BuyerSignAgreement flow when the form is submitted
         try:
@@ -101,6 +108,7 @@ def agreement_signing():
 
 
 @user.route("/agreement-signed")
+@yoti_login_required
 def agreement_signed():
     try:
         title_id = str(session['title_id'])
@@ -129,7 +137,7 @@ def agreement_signed():
 
 
 @user.route("/transfer-complete")
-@login_required
+@yoti_login_required
 def transfer_complete():
     # The user will be redirected from a link in an SMS message so read values from url to be available in session
     session['title_id'] = request.args.get('title_id')
@@ -150,16 +158,15 @@ def transfer_complete():
             is_selling = case['case_type'] == 'sell'
         except requests.exceptions.RequestException:
             raise requests.exceptions.RequestException("Case management API is down.")
-        except:
+        except Exception as e:
             return "Title number not found in any cases."
 
-        # after the transfer the seller conveyancer object does not have title details so fetch from case management
         if not is_selling:
             try:
                 title_id = str(session['title_id'])
                 # Call to fetch title address
                 title_res = requests.get(current_app.config['CONVEYANCER_API_URL'] + '/titles/' + title_id,
-                                        headers={'Accept': 'application/json'})
+                                         headers={'Accept': 'application/json'})
             except requests.exceptions.RequestException:
                 raise requests.exceptions.RequestException("Conveyancer API is down.")
 
@@ -171,8 +178,9 @@ def transfer_complete():
     else:
         return redirect(url_for('index.index_page'))
 
+
 @user.route("/agreement-context")
-@login_required
+@yoti_login_required
 def agreement_info():
     # The user will be redirected from a link in an SMS message so read values from url to be available in session
     session['title_id'] = request.args.get('title_id')
@@ -190,7 +198,7 @@ def agreement_info():
             return render_template('app/user/agreement_context.html', is_selling=is_selling)
         except requests.exceptions.RequestException:
             raise requests.exceptions.RequestException("Case management API is down.")
-        except:
+        except Exception as e:
             return "Title number not found in any cases."
     else:
         return redirect(url_for('index.index_page'))

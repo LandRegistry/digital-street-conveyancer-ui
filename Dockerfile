@@ -56,7 +56,9 @@ ENV APP_NAME=conveyancer-ui \
   PAYMENT_SETTLER_PARTY_COUNTRY='GB' \
   BUYER_LENDER_PARTY_ORGANISATION='Lender1' \
   BUYER_LENDER_PARTY_LOCALITY='Plymouth' \
-  BUYER_LENDER_PARTY_COUNTRY='GB'
+  BUYER_LENDER_PARTY_COUNTRY='GB' \
+  SSL_CERT_LOCATION='/supporting-files/ssl.cert' \
+  SSL_KEY_LOCATION='/supporting-files/ssl.key' \
+  YOTI_AUTH='FALSE'
 
 CMD ["./run.sh"]
-

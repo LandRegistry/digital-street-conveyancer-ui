@@ -1,5 +1,5 @@
 # Import every blueprint file
-from conveyancer_ui.views import general, index, conveyancer_admin, conveyancer_user, login
+from conveyancer_ui.views import general, index, conveyancer_admin, conveyancer_user, auth
 
 
 def register_blueprints(app):
@@ -8,7 +8,7 @@ def register_blueprints(app):
     app.register_blueprint(index.index)
     app.register_blueprint(conveyancer_admin.admin, url_prefix="/admin")
     app.register_blueprint(conveyancer_user.user, url_prefix="/user")
-    app.register_blueprint(login.login)
+    app.register_blueprint(auth.auth)
 
     # All done!
     app.logger.info("Blueprints registered")
