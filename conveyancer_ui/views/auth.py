@@ -145,7 +145,7 @@ def register_callback():
                 session['user_name'] = user_details['first_name'] + " " + user_details['last_name']
                 session['user_id'] = user_details['identity']
                 session['email'] = user_details['email_address']
-                return redirect(url_for('user.registration_complete'))
+                return redirect(url_for('conveyancer_user.registration_complete'))
             else:
                 return redirect(url_for('auth.register_yoti', error_message="User not found"))
         except Exception as e:
