@@ -163,8 +163,6 @@ def sign_callback():
     if token:
         try:
             activity_details = client.get_activity_details(token)
-            user_profile = activity_details.user_profile
-            # Do some user validation against the case
 
             title_number = str(session['title_id'])
 
@@ -181,7 +179,7 @@ def sign_callback():
             client['type'] = "individual"
 
             # Check that the current user is authorised to sign the agreement
-            if client['identity'] == user_profile:
+            if client['identity'] == activity_details.user_id:
 
                 url = current_app.config['CONVEYANCER_API_URL'] + '/me'
                 signatory_res = requests.get(url, headers={'Accept': 'application/json'})
