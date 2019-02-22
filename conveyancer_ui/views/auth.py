@@ -53,6 +53,8 @@ def login():
             return render_template('app/login.html', redirect_url=redirect_url, error_message="User not found.")
 
     if request.method == 'GET':
+        if 'user_name' in session:
+            return redirect(url_for('conveyancer_admin.case_list'))
         redirect_url = ""
         # handle any malicious redirects in the login URL
         if request.args.get('next', ''):
@@ -158,11 +160,11 @@ def register_callback():
 
 @auth.route("/sign-callback")
 def sign_callback():
-    client = Client(current_app.config['YOTI_CLIENT_SDK_ID'], current_app.config['YOTI_KEY_FILE_PATH'])
+    yoti_client = Client(current_app.config['YOTI_CLIENT_SDK_ID'], current_app.config['YOTI_KEY_FILE_PATH'])
     token = request.args.get('token')
     if token:
         try:
-            activity_details = client.get_activity_details(token)
+            activity_details = yoti_client.get_activity_details(token)
 
             title_number = str(session['title_id'])
 

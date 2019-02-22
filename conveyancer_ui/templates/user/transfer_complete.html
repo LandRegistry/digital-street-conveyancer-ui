@@ -3,39 +3,47 @@
 {% block content %}
   {% if is_selling %}
     <div class="col-lg-7 {{ config['APP_USER'] }}-container text-center">
-      <h1>Your property transfer is complete</h1>
+      <h1>Your property transfer is complete!</h1>
       <p class="lead">
         HM Land Registry have updated their records and you're no longer the owner of {{ address['house_name_number'] }} {{ address['street'] }}. <br>
         The money from the sale should be with you by the end of the day. <br>
       </p>        
-      <h2>Reminder!</h2>
+      <h2>Reminder</h2>
       <p class="lead">
         Make sure that you've handed your keys to your estate agent.
       </p>
-      <img src="{{ url_for('static', filename='images/app/confirmation_screen_seller.png') }}" class="img-responsive w-15">
+      {% if config['APP_USER'] == 'mishcon' %}
+        <img src="{{ url_for('static', filename='images/app/mishcon/confirmation_screen_seller.png') }}" class="img-responsive confirmation-image">
+      {% else %}
+      <img src="{{ url_for('static', filename='images/app/myhomemove/confirmation_screen_seller.png') }}" class="img-responsive confirmation-image">
+      {% endif %}
       <br>
       <p class="lead">
-        <strong>Please remember to <a href="{{ url_for('auth.logout') }}" class="colour-inherit" style="text-decoration: underline">logout</a></strong>
+        Please remember to <a href="{{ url_for('auth.logout') }}">logout</a>
       </p>
     </div>
   {% else %}
     <div class="col-lg-7  {{ config['APP_USER'] }}-container text-center p-3">
       <h1>Great news!</h1>
       <p class="lead">
-        Your property transfer is complete.<br>
+        Your property transfer is complete!<br>
         HM Land Registry have updated their records and registered you as the new owner of {{ address['house_name_number'] }} {{ address['street'] }}<br><br>
       </p>
       <p class="lead">
-        You can now:<br>        
+        You can now:<br>
         <ul class="list-style-position">
           <li>pick up the keys to your new home</li>
-          <li><a href="#" class="colour-inherit"><u>view a copy of the updated register</u></a></li>
+          <li><a href="#">view a copy of the updated register</a></li>
         </ul>
       </p>
-      <img src="{{ url_for('static', filename='images/app/confirmation_screen_buyer.png') }}" class="img-responsive w-15">
-      <br>
-      <strong>Please remember to <a href="{{ url_for('auth.logout') }}" class="colour-inherit" style="text-decoration: underline">logout</a></strong>
+      <div class="container">
+        {% if config['APP_USER'] == 'mishcon' %}
+        <img src="{{ url_for('static', filename='images/app/mishcon/confirmation_screen_buyer.png') }}" class="img-responsive confirmation-image">
+        {% else %}
+        <img src="{{ url_for('static', filename='images/app/myhomemove/confirmation_screen_buyer.png') }}" class="img-responsive confirmation-image">
+        {% endif %}
       </div>
-    </div>
+      Please remember to <a href="{{ url_for('auth.logout') }}">logout</a>
+    </div>  
   {% endif %}
 {% endblock %}

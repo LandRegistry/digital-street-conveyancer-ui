@@ -1,92 +1,97 @@
 <div class="modal-dialog" role="document">
-  <div class="modal-content {{ config['APP_USER'] }}-container text-left">
+  <div class="modal-content {{ config['APP_USER'] }}-container text-left title-details-modal">
     <div class="modal-header">
       {% if error_message %}
         <div class="alert alert-danger">
           {{ error_message }}
         </div>
       {% endif %}
-      <h5 class="modal-title" id="exampleModalLabel">
-        {% set address = title_data['title']['address'] %}
-       {{ address['house_name_number'] }} {{ address['street'] }}<br>
-        {{ address['county'] }}<br>
-        {{ address['postcode'] }}
-      </h5>
+      {% if title_data %}
+        <h5 class="modal-title" id="exampleModalLabel">
+          {% set address = title_data['title']['address'] %}
+          {{ address['house_name_number'] }}<br>
+          {{ address['street'] }}<br>
+          {{ address['town_city'] }}<br>
+          {{ address['postcode'] }}
+        </h5>
+      {% endif %}
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
-    <div class="modal-body">
-      <div class="row">
-        <div class="col"><label class="font-weight-bold">Title number:</label> {{ title_data['title_number'] }}</div>
-      </div>
-      <div class="row">
-        <div class="col"><label class="font-weight-bold">Tenure type:</label> Freehold</div>
-      </div>
-      <div class="row">
-        <div class="col"><label class="font-weight-bold">Property description:</label> 4 bedroom house with garden and private garage.</div>
-      </div>
-      <br>
-      <div class="row">
-        <div class="col"><span class="font-weight-bold">Price history</span><br>
-          <table class="table">
-            <tbody>
-            <tr>
-              <td>210,000</td>
-              <td>Sold</td>
-              <td>17 June 2017</td>
-            </tr>
-            <tr>
-              <td>160,000</td>
-              <td>Sold</td>
-              <td>08 May 2010</td>
-            </tr>
-            <tr>
-              <td>125,000</td>
-              <td>Sold</td>
-              <td>25 August 2007</td>
-            </tr>
-            </tbody>
-          </table>
+    {% if title_data %}
+      <div class="modal-body">
+        <div class="row">
+          <div class="col"><label class="font-weight-bold">Title number:</label> {{ title_data['title_number'] }}</div>
+        </div>
+        <div class="row">
+          <div class="col"><label class="font-weight-bold">Tenure type:</label> {{ extras.tenure_type }}</div>
+        </div>
+        <div class="row">
+          <div class="col"><label class="font-weight-bold">Class of title:</label> {{ extras.title_class }}</div>
+        </div>
+        <div class="row">
+          <div class="col"><label class="font-weight-bold">Property description:</label> {{ extras.property_description|safe }}</div>
+        </div>
+        <br>
+        {% if extras.price_history %}
+          <div class="row">
+            <div class="col"><span class="font-weight-bold">Price history</span><br>
+              <table class="table">
+                <tbody>
+                  {% for data in extras.price_history|sort(attribute='date',reverse=True) %}
+                    <tr>
+                      <td>{{ data.price_pretty }}</td>
+                      <td>Sold</td>
+                      <td>
+                          <span title="{{ data.date_full_pretty }}">{{ data.date_pretty }}</span>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endif %}
+        {% if extras.restrictions %}
+          <h3>Things that affect this property</h3>
+          {% if extras.restrictions.this_property %}
+            <h5>This property:</h5>
+            <ul>
+              {% for data in extras.restrictions.this_property %}
+                <li>{{ data|safe }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          {% if extras.restrictions.you_cant %}
+            <h5>You can't:</h5>
+            <ul>
+              {% for data in extras.restrictions.you_cant %}
+                <li>{{ data|safe }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %} 
+          {% if extras.restrictions.you_can %}       
+            <h5>You can:</h5>
+            <ul>
+              {% for data in extras.restrictions.you_can %}
+                <li>{{ data|safe }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          {% if extras.restrictions.other_people %}
+            <h5>Other people can use your land. The:</h5>
+            <ul>
+              {% for data in extras.restrictions.other_people %}
+                <li>{{ data|safe }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endif %}
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary  {{ config['APP_USER'] }}-bg-button btn-lg" data-dismiss="modal">Close</button>
         </div>
       </div>
-      <div class="row">
-        <div class="col">
-          <h3>Things that affect this property</h3><br>
-          <h5>This property:</h5>
-          <ul>
-            <li>sits within an urban development area (source)</li>
-            <li>is subject to hedgerow notices (source)</li>
-          </ul>
-
-          <h5>You can't:</h5>
-          <ul>
-            <li>mine this land (source)</li>
-            <li>build a factory (source)</li>
-            <li> use this land for a business (source)</li>
-            <li>build on the south side of the property (source)</li>
-          </ul>
-
-          <h5>You can:</h5>
-          <ul>
-            <li>use the path at the end of 2 Digital Street to access your property (source)</li>
-          </ul>
-
-          <h5>Other people can use your land. The:</h5>
-          <ul>
-            <li>local church can charge a regular maintenance fee (source)</li>
-            <li> owners of 2 Digital Street can use the path at the back of their land but must contribute to its
-              maintenance costs (source)
-            </li>
-            <li>Southwest Water can access your garden to access the drainage system at the end of your property
-              (source)
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary  {{ config['APP_USER'] }}-bg-button btn-lg" data-dismiss="modal">Close</button>
-      </div>
-    </div>
+    {% endif %}
   </div>
 </div>

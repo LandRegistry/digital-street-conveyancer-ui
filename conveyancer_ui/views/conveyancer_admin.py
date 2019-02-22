@@ -1,4 +1,5 @@
 import json
+import os.path
 import requests
 
 from babel import numbers
@@ -10,6 +11,8 @@ from flask import (Blueprint, current_app, redirect, render_template, request,
 
 # This is the blueprint object that gets registered into the app in blueprints.py.
 admin = Blueprint('conveyancer_admin', __name__)
+
+extras_filepath = 'extras.json'
 
 request_data = {
     "titleId": '',
@@ -132,7 +135,7 @@ def draft_sales_agreement():
     # response
     if cases_res.status_code != 200:
         return render_template('app/admin/draft_sales_agreement.html', cases_details=cases_details,
-                               error_message="Case not found")
+                               error_message="Case not found", admin=True)
     cases_details = cases_res.json()
     if request.method == 'POST':
         # make API call to create agreement state
@@ -417,14 +420,38 @@ def request_mortgage_discharge():
 @admin.route("/title-details")
 @login_required
 def title_details_popup():
-    url = current_app.config['CONVEYANCER_API_URL'] + '/titles/' + request.args.get('title_number')
-    response = requests.get(url, data=json.dumps({"action": "request_discharge"}),
-                            headers={'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'})
-    if response.status_code == 200:
-        title_data = response.json()
-        return render_template('app/admin/title_details.html', title_data=title_data)
-    else:
-        return render_template('app/admin/title_details.html', error_message="Error:" + response.text)
+    error = None
+
+    # Load extra hardcoded details from flat file
+    extras = None
+    if os.path.isfile(extras_filepath):
+        with open(extras_filepath) as json_file:
+            extras = json.load(json_file)
+
+    for price_idx, price in enumerate(extras['price_history']):
+        extras['price_history'][price_idx]['price_pretty'] = numbers.format_currency(
+            price['amount'] / 100,
+            price['currency_code']
+        ).replace(".00", "")
+
+        date_pretty = datetime.fromtimestamp(price['date']).strftime('%d %B %Y')
+        extras['price_history'][price_idx]['date_pretty'] = date_pretty
+
+        date_full_pretty = datetime.fromtimestamp(price['date']).strftime('%d %B %Y %H:%M:%S')
+        extras['price_history'][price_idx]['date_full_pretty'] = date_full_pretty
+
+    try:
+        url = current_app.config['CONVEYANCER_API_URL'] + '/titles/' + request.args.get('title_number')
+        response = requests.get(url, data=json.dumps({"action": "request_discharge"}),
+                                headers={'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'})
+        if response.status_code == 200:
+            title_data = response.json()
+            return render_template('app/admin/title_details.html', extras=extras, title_data=title_data)
+        else:
+            error = "Error: " + response.text
+    except requests.exceptions.RequestException:
+        error = "Could not connect to Conveyancer API"
+    return render_template('app/admin/title_details.html', extras=extras, error_message=error)
 
 
 @admin.route("/request-client-id", methods=['GET', 'POST'])
@@ -436,7 +463,7 @@ def request_client_id():
                 current_app.config['CONVEYANCER_API_URL'] + '/yoti-signin-request',
                 headers={'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'},
                 data=json.dumps({
-                    "client_phone_number": request.form.get('client_phone'),
+                    "client_phone_number": '+44' + request.form.get('client_phone'),
                     "client_full_name": request.form.get('client_name'),
                     "user_callback_url": url_for('auth.register_yoti', _external=True)
                 })

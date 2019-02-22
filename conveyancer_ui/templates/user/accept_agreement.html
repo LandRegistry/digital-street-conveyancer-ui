@@ -5,10 +5,13 @@
     <div class="row">
       <div class="col-lg-8 {{ config['APP_USER'] }}-container">
         <h2>Agree to sign your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements</h2>
-        <p class="mb-0">
+        <p class="mb-4">
           Please agree to your sales agreement{% if not is_selling %}, mortgage terms {% endif %} and transfer agreements.
           You'll verify this on the next screen.
-          </br>You can view your full documents below.
+          <br>You can view your full documents below.
+          {% if show_sdlt_text %}
+            <br>You'll also need to agree to pay your Stamp Duty Land Tax (SDLT).
+          {% endif %}
         </p>
         <strong>
           {{ address['house_name_number'] + ' ' + address['street'] }}<br>
@@ -25,28 +28,36 @@
         <div class="row">
           <div class="col"><strong>{{ purchase_price }}</strong></div>
         </div>
-        <br>        
-        <div class="form-check">I agree to</div>
+        <br>
+        I agree to:
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="sales-agreement" required>
           <label class="form-check-label" for="sales-agreement">
-              <strong><u>my sales agreement</u></strong>
+              <a href="#">my sales agreement</a>
           </label>
         </div>
         {% if not is_selling %}
           <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="mortgage-terms" required>
               <label class="form-check-label" for="mortgage-terms">
-                  <strong><u>{{ buyer_lender | title }}'s mortgage terms</u></strong>
-              </label>        
+                  <a href="#">{{ buyer_lender | title }}'s mortgage terms</a>
+              </label>
           </div>
         {% endif %}
         <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="property-transfer" required>
             <label class="form-check-label" for="property-transfer">
-                 <strong><u>my property transfer</u></strong>
+                 <a href="#">my property transfer</a>
             </label>
-        </div>           
+        </div>
+        {% if not is_selling %}
+          <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="sdlt" required>
+              <label class="form-check-label" for="sdlt">
+                  <strong><a href="#">SDLT calculation of {{ sdlt_figure }}</a></strong>
+              </label>
+          </div>
+        {% endif %}
         <div class="row">
           <div class="col">
             <button type="submit" class="btn {{ config['APP_USER'] }}-bg-button btn-blue m-3">

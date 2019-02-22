@@ -1,0 +1,37 @@
+{
+    "tenure_type": "Freehold",
+    "title_class": "Absolute",
+    "property_description": "4 bedroom house with garden and private garage.",
+    "restrictions": {
+        "this_property": [
+            "sits within an urban development area",
+            "is subject to hedgerow notices"
+        ],
+        "you_cant": [
+            "mine this land",
+            "build a factory",
+            "use this land for a business",
+            "build on the south side of the property"
+        ],
+        "you_can": [
+            "use the path at the end of 2 Digital Street to access your property"
+        ],
+        "other_people": [
+            "local church can charge a regular maintenance fee",
+            "owners of 2 Digital Street can use the path at the back of their land but must contribute to its maintenance costs",
+            "<a href=\"#sw-water\">Southwest Water</a> can access your garden to access the drainage system at the end of your property"
+        ]
+    },
+    "price_history": [
+        {
+            "date": 1550574844,
+            "amount": 12499999,
+            "currency_code": "GBP"
+        },
+        {
+            "date": 1523574444,
+            "amount": 12499999,
+            "currency_code": "GBP"
+        }
+    ]
+}

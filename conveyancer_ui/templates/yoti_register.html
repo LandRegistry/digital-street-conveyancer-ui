@@ -19,12 +19,12 @@
       {% endif %}
       <div class="row">
         <main role="main" class="col-lg-6 ml-sm-auto {{ config['APP_USER'] }}-container">
-            <h1>Thank you for choosing {{ config['APP_USER'] }} to represent you!</h1>
+            
+              <h1>Thank you for choosing {% if config['APP_USER'] == 'mishcon' %}Mishcon Conveyancing{% else %}Premier Property Lawyers{% endif %} to represent you!</h1>
             <p class="lead">
                 We need to carry out some checks before proceeding.<br>
                 To do this you'll need to share your Yoti ID with us.
             </p>
-
             <p>
                 We'll ask you to share your:
             </p>
@@ -35,15 +35,14 @@
                         <li>Remember Me ID</li>
                         <li>Name</li>
                         <li>Email address</li>
-                        <li>Phone number</li>
-                        <li>Postal Address</li>
+                        <li>Phone number</li>                        
                     </ul>
                 </div>
             </div>
 
             <div class="mb-2">
-                <span data-yoti-application-id="{{ config['YOTI_APPLICATION_ID'] }}" data-yoti-type="instant" data-yoti-scenario-id="{{ config['YOTI_REGISTER_SCENARIO_ID'] }}">
-                    Continue with Yoti
+                <span data-yoti-application-id="{{ config['YOTI_APPLICATION_ID'] }}" data-yoti-type="popout" data-yoti-scenario-id="{{ config['YOTI_REGISTER_SCENARIO_ID'] }}">
+                    Continue
                 </span>
             </div>
         </main>

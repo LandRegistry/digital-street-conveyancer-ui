@@ -18,24 +18,23 @@
       </div>
     {% endif %}
     {% if cases %}
-      <h1>Cases</h1>
       <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item">
-          <a class="nav-link active" id="selling-tab" data-toggle="tab" href="#selling" role="tab" aria-controls="selling" aria-selected="true">Selling</a>
+          <a class="nav-link active" id="selling-tab" data-toggle="tab" href="#selling" role="tab" aria-controls="selling" aria-selected="true">Sales</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="buying-tab" data-toggle="tab" href="#buying" role="tab" aria-controls="buying" aria-selected="false">Buying</a>
+          <a class="nav-link" id="buying-tab" data-toggle="tab" href="#buying" role="tab" aria-controls="buying" aria-selected="false">Purchases</a>
         </li>
         </ul>
       <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="selling" role="tabpanel" aria-labelledby="selling-tab">
           <div class="table-responsive">
-            <table class="table table-hover table-striped" id="tbl_selling_case_list">
+            <table class="table table-hover" id="tbl_selling_case_list">
               <tbody>
                 <thead>
                   <tr>
                     <th scope="col">Client</th>
-                    <th scope="col">Case number</th>
+                    <th scope="col">Case reference</th>
                     <th scope="col">Address</th>
                     <th scope="col">Title number</th>
                     <th scope="col">Status</th>
@@ -69,7 +68,7 @@
                       {% if status_dict[case['title_number']] %}
                         <td>
                           {% if status_dict[case['title_number']] == "request_issuance_pending" %}
-                            Pending retrieval
+                              Pending retrieval
                           {% elif status_dict[case['title_number']] == "land_title_issued" %}
                             <a href="{{ url_for('conveyancer_admin.request_mortgage_discharge',
                             title_number=case['title_number']) }}">
@@ -110,17 +109,13 @@
                     </tr>
                   {% endfor %}
               {% endif %}
-              <tr>
-                <td colspan="4"></td>                  
-                <td><a href="{{ url_for('conveyancer_admin.request_client_id') }}">Request ID</a></td>
-              </tr>
             </tbody>
           </table>
         </div>
       </div>
         <div class="tab-pane fade" id="buying" role="tabpanel" aria-labelledby="buying-tab">
           <div class="table-responsive">
-            <table class="table table-hover table-striped" id="tbl_buying_case_list">
+            <table class="table table-hover" id="tbl_buying_case_list">
               <tbody>
                 <thead>
                   <tr>
@@ -149,7 +144,7 @@
                       <td>
                         {% if case['title_number'] %}
                           {% if status_dict[case['title_number']] and status_dict[case['title_number']] != "request_issuance_pending" %}
-                            <a  href="#" onclick="open_title_modal(this)" data-title="{{ case['title_number'] }}"  data-target="#titleDetailsModal">{{ case['title_number'] }}</a>
+                            <a href="#" onclick="open_title_modal(this)" data-title="{{ case['title_number'] }}"  data-target="#titleDetailsModal">{{ case['title_number'] }}</a>
                           {% else %}
                             {{ case['title_number'] }}
                           {% endif %}
@@ -179,16 +174,12 @@
                         </td>
                       {% else %}
                         <td>
-                          Title pending issuance
+                          Waiting for seller's conveyancer
                         </td>
                       {% endif %}
                     </tr>
                   {% endfor %}                
-                {% endif %}
-                <tr>
-                  <td colspan="4"></td>                  
-                  <td><a href="{{ url_for('conveyancer_admin.request_client_id') }}">Request ID</a></td>
-                </tr>
+                {% endif %}                
               </tbody>
             </table>
           </div>

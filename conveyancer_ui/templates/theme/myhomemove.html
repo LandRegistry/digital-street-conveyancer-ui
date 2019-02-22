@@ -1,9 +1,9 @@
 {% extends "app/layout.html" %}
 
 {% block header %}
-  <nav class="navbar shadow navbar-dark navbar-expand-lg fixed-top lr-bg-green flex-md-nowrap p-lg-0">
+  <nav class="navbar shadow navbar-dark navbar-expand-lg fixed-top flex-md-nowrap p-lg-0 myhomemove-navbar">
     <div class="container-fluid">
-      <a class="navbar-brand mb-0 h1" href="/">Conveyit4u</a>
+        <a class="navbar-brand mb-0 h1" href="/"><img class="myhomemove-logo" src={{ url_for('static', filename="images/app/ppl_logo.png") }} alt="Premier Property Lawyers"></a>
       {% if session['user_name']%}
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main_navbar" aria-controls="main_navbar" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>

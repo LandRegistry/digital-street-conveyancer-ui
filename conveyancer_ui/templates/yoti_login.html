@@ -5,8 +5,7 @@
     <script src="https://sdk.yoti.com/clients/browser.2.2.0.js"></script>
 {% endblock %}
 
-{% block main %}
-  <div class="vertical-center">
+{% block main %}  
     <div class="container">
       {% if error_message %}
         <div class="row">
@@ -17,18 +16,22 @@
           </div>
         </div>
       {% endif %}
-      <div class="row">
+      <div class="vertical-center">
         <main role="main" class="col-lg-6 ml-sm-auto {{ config['APP_USER'] }}-container">
-            <h1>Log in with Yoti</h1>
-            <div class="mb-2">
-              <span data-yoti-application-id="{{ config['YOTI_APPLICATION_ID'] }}" data-yoti-type="instant" data-yoti-scenario-id="{{ config['YOTI_LOGIN_SCENARIO_ID'] }}">
-                Use Yoti
-              </span>
-            </div>
-            <p>Don't have an account? <a href="{{ url_for('auth.register_yoti')}}">Register</a></p>
+          {% if config['APP_USER'] == 'mishcon' %}
+            <h1 class="mishcon-title">Mischon Conveyancing</h1>          
+          {% endif %}
+          <h2>Login with Yoti</h2>
+          <div class="mt-4 mb-4">
+            <span data-yoti-application-id="{{ config['YOTI_APPLICATION_ID'] }}" data-yoti-type="popout" data-yoti-scenario-id="{{ config['YOTI_LOGIN_SCENARIO_ID'] }}">
+              Continue
+            </span>
+          </div>
+          <p>Don't have an account? <a href="{{ url_for('auth.register_yoti')}}">Register</a></p>
         </main>
+      </div>
     </div>
-  </div>
+
 {% endblock %}
 
 {% block bodyEnd %}

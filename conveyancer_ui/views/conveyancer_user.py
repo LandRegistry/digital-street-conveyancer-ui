@@ -36,11 +36,20 @@ def accept_agreement():
         title = title_res.json()
         agreement = agreement_res.json()
 
-        # Convert purchase price from float to currency format
+        # Convert amounts from float to currency format
         purchase_price = numbers.format_currency(
             agreement['purchase_price'],
             agreement['purchase_price_currency_code']
         )
+        if 'sdlt' in agreement and 'sdlt_currency_code' in agreement:
+            sdlt_figure = numbers.format_currency(
+                agreement['sdlt'],
+                agreement['sdlt_currency_code']
+            )
+            show_sdlt_text = agreement['sdlt'] > 0
+        else:
+            sdlt_figure = 'Error'
+            show_sdlt_text = False
 
         # Case reference is required in entire journey, so if not found redirect to index page
         if session.get('case_reference'):
@@ -54,7 +63,8 @@ def accept_agreement():
         is_selling = is_selling_property(case_reference)
 
         return render_template('app/user/accept_agreement.html', address=title['title']['address'],
-                               purchase_price=purchase_price, is_selling=is_selling, buyer_lender=buyer_lender)
+                               purchase_price=purchase_price, is_selling=is_selling, buyer_lender=buyer_lender,
+                               sdlt_figure=sdlt_figure, show_sdlt_text=show_sdlt_text)
     else:
         return "Title agreement not found"
 
@@ -65,7 +75,6 @@ def agreement_signing():
     if request.method == 'GET':
         # Check if case is to buy or sell
         is_selling = is_selling_property(session['case_reference'])
-
         return render_template('app/user/agreement_signing.html', is_selling=is_selling,
                                error_message=request.args.get('error_message'))
     elif request.method == 'POST':
@@ -158,7 +167,7 @@ def transfer_complete():
             is_selling = case['case_type'] == 'sell'
         except requests.exceptions.RequestException:
             raise requests.exceptions.RequestException("Case management API is down.")
-        except Exception as e:
+        except Exception:
             return "Title number not found in any cases."
 
         if not is_selling:
@@ -198,7 +207,7 @@ def agreement_info():
             return render_template('app/user/agreement_context.html', is_selling=is_selling)
         except requests.exceptions.RequestException:
             raise requests.exceptions.RequestException("Case management API is down.")
-        except Exception as e:
+        except Exception:
             return "Title number not found in any cases."
     else:
         return redirect(url_for('index.index_page'))

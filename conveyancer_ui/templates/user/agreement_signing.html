@@ -22,7 +22,7 @@
       {% if config.get('YOTI_AUTH') == 'TRUE' %}
         <h4>Use your Yoti ID to verify that you're happy for your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements to be signed</h4><br>
         <span data-yoti-application-id="{{ config['YOTI_APPLICATION_ID'] }}" data-yoti-type="instant" data-yoti-scenario-id="{{ config['YOTI_SIGN_SCENARIO_ID'] }}">
-          Use Yoti
+          Continue
         </span>
       {% else %}
         <h4>Use your touch ID to verify that you're happy for your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements to be signed</h4><br>

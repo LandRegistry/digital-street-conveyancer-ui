@@ -13,7 +13,7 @@ services:
       YOTI_REGISTER_SCENARIO_ID: ''
       YOTI_SIGN_SCENARIO_ID: ''
       YOTI_KEY_FILE_PATH: './keys/Conveyancer A (Dev Environment)-access-security.pem'
-      APP_USER: 'conveyit4u'
+      APP_USER: 'myhomemove'
     restart: on-failure
     ports:
       # The base Flask Dockerfile tells gunicorn to use 8080 by default, we expose it here and map it to a unique
@@ -44,7 +44,7 @@ services:
       YOTI_REGISTER_SCENARIO_ID: ''
       YOTI_SIGN_SCENARIO_ID: ''
       YOTI_KEY_FILE_PATH: './keys/Conveyancer B (Dev Environment)-access-security.pem'
-      APP_USER: 'propertylaw'
+      APP_USER: 'mishcon'
     restart: on-failure
     ports:
       # The base Flask Dockerfile tells gunicorn to use 8080 by default, we expose it here and map it to a unique

@@ -1,0 +1,163 @@
+@import url(//db.onlinewebfonts.com/c/c0bff3575803a719371d2efd5f133c62?family=Sabon);
+
+@font-face {
+    font-family: "Sabon-Roman";
+    src: url("//db.onlinewebfonts.com/t/c0bff3575803a719371d2efd5f133c62.eot");
+    src: url("//db.onlinewebfonts.com/t/c0bff3575803a719371d2efd5f133c62.eot?#iefix") format("embedded-opentype"),
+    url("//db.onlinewebfonts.com/t/c0bff3575803a719371d2efd5f133c62.woff2") format("woff2"),
+    url("//db.onlinewebfonts.com/t/c0bff3575803a719371d2efd5f133c62.woff") format("woff"),
+    url("//db.onlinewebfonts.com/t/c0bff3575803a719371d2efd5f133c62.ttf") format("truetype"),
+    url("//db.onlinewebfonts.com/t/c0bff3575803a719371d2efd5f133c62.svg#Sabon") format("svg");
+}
+
+$mishcon-orange: #F5891C;
+$mishcon-lightgrey: #B9B9B9;
+$mishcon-grey: #555555;
+$mishcon-darkgrey: #414141;
+
+body {
+    font-size: 1em !important;
+    color: #000 !important;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif !important;
+    font-weight: 200;
+}
+
+[role="main"] {
+    padding-top: 48px; /* Space for fixed navbar */
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    margin-bottom: .5rem;
+    font-family: inherit;
+    font-weight: 100;
+    line-height: 1.2;
+    color: $mishcon-darkgrey;
+}
+
+.navbar h1, .navbar .h1 {
+    font-family: 'sabon-roman';
+}
+
+input, textarea, select, button {
+    font-weight: 200;
+    color: lighten(#495057, 20%)
+}
+
+th {
+    font-weight: normal !important;
+}
+
+a {
+    color: $mishcon-orange;
+}
+
+.input-group-text {
+    font-weight: 200;
+}
+
+.table thead th {
+    border-bottom: 1px solid $mishcon-orange;
+}
+
+.table th {
+    border-top: 0;
+}
+
+#main_navbar .nav-link {
+    color: $mishcon-orange;
+}
+
+a:hover {
+    color: lighten($mishcon-orange, 20%);
+    text-decoration: underline;
+}
+
+// Sidebar
+
+/* unvisited link */
+#nav_sidebar > div > ul > li > a:link  {
+    color: #fff;
+}
+
+#nav_sidebar > div > ul > li  > a:visited {
+    color: #fff;
+}
+
+/* mouse over link */
+#nav_sidebar > div > ul > li  > a:hover {
+    background-color: $mishcon-grey;
+}
+
+#nav_sidebar .active {
+    background-color: $mishcon-grey;
+    color: $mishcon-orange !important;
+}
+
+#nav_sidebar .active:hover {
+    background-color: $mishcon-darkgrey;
+}
+
+/* selected link */
+#nav_sidebar li a:active {
+    color: $mishcon-orange;
+}
+
+.row-select{
+    background-color: $mishcon-lightgrey;
+}
+
+.mishcon-logo {
+    display: block;
+    width: 200px;
+    max-width: 100%;
+    height: 30px;
+    margin: 0 0 3px 0;
+}
+
+.mischon-navbar {
+    background-color: $mishcon-grey;
+}
+
+.mishcon-bg-button{
+    background: linear-gradient(to right, #f58024 0%, #F55A24 100%);
+    color: #fff;
+    border: none;
+    border-radius: 0;
+    letter-spacing: .9px;
+    font-weight: 200;
+}
+
+.mishcon-contract-box{
+    border: 4px solid $mishcon-grey;
+    padding: 15px;
+    font-weight: 300;
+    font-size: 16px;
+}
+
+.mishcon-container{
+    background-color: #fff;
+    text-align:center;
+    color: $mishcon-darkgrey;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.mishcon-title {
+    font-family: 'sabon-roman';
+    padding-bottom: 25px;
+}
+
+.mishcon-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100; /* Behind the navbar */
+    padding: 48px 0 0; /* Height of navbar */
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    background-color:$mishcon-lightgrey;
+}
+
+.font-weight-bold {
+    font-weight: 400 !important;
+}

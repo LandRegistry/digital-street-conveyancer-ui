@@ -1,0 +1,137 @@
+$myhomemove-darkcyan: #007681;
+$myhomemove-lightblue: #b1dce5;
+$myhomemove-darkblue: #13284b;
+
+$myhomemove-cyan: #55C1A7;
+$myhomemove-cyanblue: hsl(185, 100%, 39%);
+$myhomemove-darkcyan: #008896;
+$navbar-height: 110px;
+
+body {
+    font-size: 1em !important;
+    color: #000 !important;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+[role="main"] {
+    padding-top: $navbar-height; /* Space for fixed navbar */
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    margin-bottom: .5rem;
+    font-family: inherit;
+    font-weight: 100;
+    line-height: 1.2;
+    color: $myhomemove-darkblue;
+}
+
+input, textarea, select, button {
+    font-weight: 200;
+    color: lighten(#495057, 20%)
+}
+
+th {
+    font-weight: normal !important;
+}
+
+.input-group-text {
+    font-weight: 200;
+}
+
+.table thead th {
+    border-bottom: 1px solid $myhomemove-darkblue;
+}
+
+.table th {
+    border-top: 0;
+}
+
+#main_navbar .nav-link {
+    color: #fff;
+}
+
+// Sidebar
+
+/* unvisited link */
+#nav_sidebar > div > ul > li > a:link  {
+    color: #fff;
+}
+
+#nav_sidebar > div > ul > li  > a:visited {
+    color: #fff;
+}
+
+/* mouse over link */
+#nav_sidebar > div > ul > li  > a:hover {
+    background-color: $myhomemove-darkblue;
+}
+
+#nav_sidebar .active {
+    background-color: $myhomemove-darkblue;
+}
+
+#nav_sidebar .active > a {
+    color: #fff !important;
+}
+
+#nav_sidebar .active:hover {
+    background-color: $myhomemove-darkblue;
+}
+
+.row-select{
+    background-color: $myhomemove-lightblue;
+}
+
+.myhomemove-logo {
+    display: block;
+    width: 140px;
+    max-width: 100%;
+    margin: 10px 10px;
+}
+
+.myhomemove-navbar {
+    background-color: $myhomemove-darkblue;
+}
+
+.myhomemove-bg-button{
+    background-color: $myhomemove-darkblue;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+
+.myhomemove-contract-box{
+    border: 4px solid $myhomemove-darkcyan;
+    padding: 15px;
+    font-weight: 300;
+    font-size: 16px;
+}
+
+.myhomemove-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100; /* Behind the navbar */
+    padding: $navbar-height 0 0; /* Height of navbar */
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    background-color: $myhomemove-darkcyan;
+  }
+
+.myhomemove-container{
+    background-color: $myhomemove-lightblue;
+    text-align:center;
+    color: $myhomemove-darkblue;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+/* sm , md and lg*/
+@media screen and (min-width: 768px) {
+    .myhomemove-logo {
+        display: block;
+        width: 180px;
+        max-width: 100%;
+        margin: 20px 10px;
+    }
+}

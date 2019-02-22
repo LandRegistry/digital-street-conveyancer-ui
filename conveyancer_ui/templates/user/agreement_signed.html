@@ -2,14 +2,21 @@
 
 {% block content %}
   <div class="col-lg-7 {{ config['APP_USER'] }}-container text-center">
-      <h1 class="font-weight-bold">Great news!</h1>
+      <h1>Great news!</h1>
       <h3>Your sales{% if not is_selling %}, mortgage {% endif %} and transfer agreements have been signed</h3><br>
       {% if is_selling %}
-        <img src="{{ url_for('static', filename='images/app/confirmation_signed_agreements_seller.png') }}"
-             class="img-responsive confirmation-image">
+        {% if config['APP_USER'] == 'mishcon' %}
+          <img src="{{ url_for('static', filename='images/app/mishcon/confirmation_signed_agreements_seller.png') }}" class="img-responsive confirmation-image">
+        {% else %}
+          <img src="{{ url_for('static', filename='images/app/myhomemove/confirmation_signed_agreements_seller.png') }}" class="img-responsive confirmation-image">
+        {% endif %}
+
       {% else %}
-        <img src="{{ url_for('static', filename='images/app/confirmation_signed_agreements_buyer.png') }}"
-             class="img-responsive confirmation-image">
+        {% if config['APP_USER'] == 'mishcon' %}
+          <img src="{{ url_for('static', filename='images/app/mishcon/confirmation_signed_agreements_buyer_dark.png') }}" class="img-responsive confirmation-image">
+        {% else %}
+          <img src="{{ url_for('static', filename='images/app/myhomemove/confirmation_signed_agreements_buyer.png') }}" class="img-responsive confirmation-image">
+        {% endif %}        
       {% endif %}
       <br>
       <br>
@@ -21,6 +28,6 @@
       <br>will be transferred on <br><strong>{{ completion_date }}</strong>
       <br><br>
       We'll be in touch with any updates<br>
-      <strong>Please now <u><a href="{{ url_for('auth.logout') }}"  class="colour-inherit">logout</a></u></strong>
+      Please remember to <a href="{{ url_for('auth.logout') }}">logout</a>
   </div>
 {% endblock %}
