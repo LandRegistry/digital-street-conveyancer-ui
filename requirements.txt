@@ -5,18 +5,17 @@
 #    pip-compile --upgrade
 #
 asn1==2.2.0               # via yoti
-asn1crypto==0.24.0        # via cryptography
-babel==2.6.0
+babel==2.6.0              # via -r requirements.in
 certifi==2018.11.29       # via requests
 cffi==1.12.1              # via cryptography, misaka
 chardet==3.0.4            # via requests
 click==7.0                # via flask
-cryptography==2.5         # via pyopenssl, yoti
-flask-compress==1.4.0
-flask-logconfig==0.4.2
-flask-script==2.0.6
-flask-wtf==0.14.2
-flask==1.0.2
+cryptography==3.2         # via pyopenssl, yoti
+flask-compress==1.4.0     # via -r requirements.in
+flask-logconfig==0.4.2    # via -r requirements.in
+flask-script==2.0.6       # via -r requirements.in
+flask-wtf==0.14.2         # via -r requirements.in
+flask==1.0.2              # via -r requirements.in, flask-compress, flask-logconfig, flask-script, flask-wtf
 future==0.17.1            # via yoti
 idna==2.8                 # via requests
 itsdangerous==1.1.0       # via flask
@@ -24,15 +23,15 @@ jinja2==2.10              # via flask
 logconfig==0.4.0          # via flask-logconfig
 logutils==0.3.5           # via logconfig
 markupsafe==1.1.0         # via jinja2
-misaka==2.1.1
+misaka==2.1.1             # via -r requirements.in
 protobuf==3.6.1           # via yoti
 pycparser==2.19           # via cffi
 pyopenssl==19.0.0         # via yoti
 pytz==2018.9              # via babel
 pyyaml==3.13              # via logconfig
-requests==2.21.0
+requests==2.21.0          # via -r requirements.in, yoti
 six==1.12.0               # via cryptography, protobuf, pyopenssl
 urllib3==1.24.1           # via requests
 werkzeug==0.14.1          # via flask
 wtforms==2.2.1            # via flask-wtf
-yoti==2.6.1
+yoti==2.6.1               # via -r requirements.in
